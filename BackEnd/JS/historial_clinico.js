@@ -48,6 +48,39 @@ function getHistorialRef(user) {
     );
 }
 
+async function getPersonaRef(user) {
+    if (tipo === "paciente") {
+        return doc(
+            db,
+            "users", user.uid,
+            "clinicas", clinicaId,
+            "pacientes", personaId
+        );
+    }
+
+    return doc(
+        db,
+        "users", user.uid,
+        "perfiles", personaId
+    );
+}
+
+async function actualizarPersona(user, data) {
+    const personaRef = await getPersonaRef(user);
+
+    await setDoc(
+        personaRef,
+        {
+            nombre: data.nombre,
+            edad: data.edad,
+            sexo: data.sexo,
+            updatedAt: new Date()
+        },
+        { merge: true }
+    );
+}
+
+
 /* -------------------------------------------------
    CARGAR HISTORIAL EXISTENTE
 ------------------------------------------------- */
@@ -57,6 +90,21 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
 
+    /* -----------------------------
+       CARGAR DATOS PERSONALES
+    ----------------------------- */
+    const personaSnap = await getDoc(await getPersonaRef(user));
+    if (personaSnap.exists()) {
+        const persona = personaSnap.data();
+
+        if (persona.nombre) nombreInput.value = persona.nombre;
+        if (persona.edad) ageInput.value = persona.edad;
+        if (persona.sexo) sexInput.value = persona.sexo;
+    }
+
+    /* -----------------------------
+       CARGAR HISTORIAL (SI EXISTE)
+    ----------------------------- */
     const snap = await getDoc(getHistorialRef(user));
     if (snap.exists()) {
         actualizarInputs(snap.data());
@@ -85,7 +133,9 @@ const data = {
 };
 
     await setDoc(getHistorialRef(user), data);
-    saveStatus.innerText = "Historial clínico guardado correctamente.";
+    await actualizarPersona(user, data);
+
+    saveStatus.innerText = "Historial clínico y datos personales guardados correctamente.";
 });
 
 /* -------------------------------------------------

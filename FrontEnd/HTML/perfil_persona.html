@@ -36,6 +36,25 @@
     Riesgo estimado de Diabetes Tipo 2:
     <strong id="riesgoPrediccion">-</strong>
 </p>
+<p>
+    Explicaciones:
+    <ul id="explicacionesPrediccion">
+        <li>-</li>
+    </ul>
+</p>
+<p>
+    Recomendaciones:
+    <ul id="recomendacionesPrediccion">
+        <li>-</li>
+    </ul>
+</p>
+
+<h3>Visualización del riesgo</h3>
+
+<div class="charts-container">
+    <canvas id="riesgoChart" width="300" height="300"></canvas>
+    <canvas id="factoresChart" width="400" height="300"></canvas>
+</div>
 
 <p><em>Este resultado es solo informativo y no sustituye la opinion medica.</em></p>
 
@@ -44,6 +63,7 @@
     Volver a mi panel
 </button>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/perfil_persona.js"></script>
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>
 </body>

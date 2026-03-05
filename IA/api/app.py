@@ -16,8 +16,8 @@ CORS(
 @app.route("/api/predict", methods=["POST"])
 def predict():
     data = request.json
-    prediccion = predict_risk(data)
-    return jsonify({ "prediccion": prediccion })
+    historial = predict_risk(data)
+    return jsonify({ "historial": historial })
 
 if __name__ == "__main__":
     app.run(debug=True)
