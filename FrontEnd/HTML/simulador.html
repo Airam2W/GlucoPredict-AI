@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador de Riesgo</title>
+
+    <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/base.css">
+    <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/simulador.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Simulador de evolución del riesgo</h2>
+
+    <!-- INFO PACIENTE -->
+    <div class="card">
+        <p><strong>Nombre:</strong> <span id="nombre">-</span></p>
+        <p><strong>Riesgo actual:</strong> <span id="riesgoActual">-</span>%</p>
+    </div>
+
+    <!-- CONTROLES -->
+    <div class="card">
+        <h3>Configuración</h3>
+
+        <label>Tiempo:</label>
+        <select id="tiempo">
+            <option value="4">4 semanas</option>
+            <option value="8">8 semanas</option>
+            <option value="12">12 semanas</option>
+        </select>
+
+        <h4>Recomendaciones a aplicar:</h4>
+
+        <div class="acciones" id="recomendacionesEl">
+
+        </div>
+
+        <button id="btnSimular">Simular</button>
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="card">
+        <h3>Resultado</h3>
+        <canvas id="graficaRiesgo"></canvas>
+        <p id="interpretacion"></p>
+        <p id="riesgoFinal"></p>
+        <p id="mensajeFinal">Recuerda que estos resultados son estimaciones y pueden variar según tu situación individual.</p>
+    </div>
+
+    <button id="btnVolver">Volver</button>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script type="module" src="/GlucoPredict-AI/BackEnd/JS/simulador.js"></script>
+<script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>    
+
+</body>
+</html>

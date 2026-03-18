@@ -225,16 +225,18 @@ onAuthStateChanged(auth, async (user) => {
         const explicaciones = await obtenerExplicacionesMedica(historial);
         explicacionesEl.innerHTML = "";
         explicaciones.forEach(explicacion => {
-            const li = document.createElement("li");
-            li.innerText = "⚠ - " + explicacion;
-            explicacionesEl.appendChild(li);
+            const p = document.createElement("p");
+            p.classList.add("explicacion-item");
+            p.innerText = "🔍 " + explicacion;
+            explicacionesEl.appendChild(p);
         });
         const recomendaciones = await obtenerRecomendaciones(historial);
         recomendacionesEl.innerHTML = "";
         recomendaciones.forEach(recomendacion => {
-            const li = document.createElement("li");
-            li.innerText = "- " + recomendacion;
-            recomendacionesEl.appendChild(li);
+            const p = document.createElement("p");
+            p.classList.add("recomendacion-item");
+            p.innerText = "💡 " + recomendacion;
+            recomendacionesEl.appendChild(p);
         });
 
         crearGraficaRiesgo(riesgo);
@@ -256,4 +258,9 @@ btnHistorial.onclick = () => {
 
 btnVolver.onclick = () => {
     window.location.href = `clinica.html?id=${clinicaId}`;
+};
+
+btnSimular.onclick = () => {
+    window.location.href=
+`simulador.html?tipo=paciente&id=${pacienteId}&clinica=${clinicaId}`
 };

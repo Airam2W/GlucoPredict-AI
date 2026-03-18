@@ -40,13 +40,31 @@ br{ display:none; }
     margin-top: 30px;
 }
 
+.explicacion-item {
+    background: #f5f5f5;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-left: 5px solid #1976D2;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.recomendacion-item {
+    background: #f5f5f5;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-left: 5px solid #1976D2;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
 canvas {
     max-width: 200px;
     max-height: 200px;
 }
 
 #explicacionesPrediccion, #recomendacionesPrediccion {
-  margin-top: -10px;
+  margin-top: -5px;
   width: min(720px, 100%);
   color: var(--text);
   text-align: left;
