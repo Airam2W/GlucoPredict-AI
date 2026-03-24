@@ -1,4 +1,4 @@
-body{
+﻿body{
   min-height: 100vh;
   display:flex;
   flex-direction:column;
@@ -26,29 +26,14 @@ form{
   gap: 10px;
 }
 
-/* quita espacios por <br> */
 form br{ display:none; }
 br{ display:none; }
 
-input{
-  width: 100%;
-}
-
-button{
+button,
+.page-actions{
   width: min(520px, 100%);
 }
 
 form button{
   width: 100%;
-}
-
-/* botón volver como secundario */
-body > button{
-  background: var(--primary-soft);
-  color: var(--primary);
-  box-shadow: none;
-  border: 1px solid rgba(185,211,238,.9);
-}
-body > button:hover{
-  background: #c6dbf3;
 }

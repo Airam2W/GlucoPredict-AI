@@ -27,45 +27,36 @@
 
 <h3>Historial clinico</h3>
 <p id="estadoHistorial">No registrado</p>
-<button id="btnHistorial">
-    Subir / Editar historial clinico
-</button>
-
-<h3>Resultado de prediccion</h3>
-<p>
-    Riesgo estimado de Diabetes Tipo 2:
-    <strong id="riesgoPrediccion">-</strong>
-</p>
-<p>
-    Explicaciones:
-    <ul id="explicacionesPrediccion">
-        <li>-</li>
-    </ul>
-</p>
-<p>
-    Recomendaciones:
-    <ul id="recomendacionesPrediccion">
-        <li>-</li>
-    </ul>
-</p>
-
-<h3>Visualización del riesgo</h3>
-
-<div class="charts-container">
-    <canvas id="riesgoChart" width="300" height="300"></canvas>
-    <canvas id="factoresChart" width="400" height="300"></canvas>
+<div class="page-actions compact-actions">
+    <button id="btnHistorial">Subir / Editar historial clinico</button>
 </div>
 
-<h3>Simulación de recomendaciones</h3>
+<h3>Resultado de prediccion</h3>
+<p>Riesgo estimado de Diabetes Tipo 2: <strong id="riesgoPrediccion">-</strong></p>
+<div id="explicacionesPrediccion" class="content-list">
+    <p class="explicacion-item">-</p>
+</div>
+<div id="recomendacionesPrediccion" class="content-list">
+    <p class="recomendacion-item">-</p>
+</div>
 
-<button id="btnSimular">Simular evolución del riesgo</button>
+<h3>Visualizacion del riesgo</h3>
+<div class="charts-container">
+    <div class="chart-card">
+        <canvas id="riesgoChart" width="300" height="300"></canvas>
+    </div>
+    <div class="chart-card factor-chart-card">
+        <canvas id="factoresChart" width="400" height="300"></canvas>
+    </div>
+</div>
 
+<h3>Simulacion de recomendaciones</h3>
 <p><em>Este resultado es solo informativo y no sustituye la opinion medica.</em></p>
-
-<br><br>
-<button onclick="window.location.href='persona_dashboard.html'">
-    Volver a mi panel
-</button>
+<div class="page-actions">
+    <button id="btnSimular">Simular evolucion del riesgo</button>
+    <button id="btnEliminarPerfil" class="danger-button">Eliminar perfil</button>
+    <button id="btnVolver" class="btn-ghost">Volver a mi panel</button>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/perfil_persona.js"></script>

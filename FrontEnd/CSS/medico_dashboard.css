@@ -1,4 +1,4 @@
-body{
+﻿body{
   min-height: 100vh;
   display:flex;
   flex-direction:column;
@@ -13,9 +13,6 @@ h2{ margin:0; color: var(--primary); }
 ul{
   width: min(720px, 100%);
   padding: 0;
-}
-
-ul{
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -23,8 +20,6 @@ ul{
   overflow:hidden;
 }
 
-button{
+.page-actions{
   width: min(720px, 100%);
 }
-
-br{ display:none; }

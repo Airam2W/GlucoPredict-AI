@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
 
 :root {
   --bg: #f4f7fb;
@@ -6,6 +6,7 @@
   --primary: #4d8dc6;
   --primary-soft: #d9e7f5;
   --accent: #5ac8b0;
+  --danger: #d9534f;
 
   --text: #1f2a44;
   --muted: #5a6b8a;
@@ -63,7 +64,15 @@ button:active{ transform: translateY(0); }
 }
 .btn-ghost:hover{ filter:none; }
 
-input, select{
+.danger-button{
+  background: linear-gradient(135deg, var(--danger), #e3706c);
+  box-shadow: 0 16px 30px rgba(217, 83, 79, .22);
+}
+.danger-button:hover{
+  box-shadow: 0 20px 40px rgba(217, 83, 79, .28);
+}
+
+input, select, textarea{
   width: 100%;
   padding: 12px 14px;
   border-radius: 14px;
@@ -72,13 +81,16 @@ input, select{
   font-family: inherit;
   color: var(--text);
 }
-input:focus, select:focus{
+textarea{
+  min-height: 110px;
+  resize: vertical;
+}
+input:focus, select:focus, textarea:focus{
   outline: none;
   border-color: rgba(77,141,198,.55);
   box-shadow: var(--ring);
 }
 
-/* Lista bonita sin afectar links normales */
 ul{
   list-style: none;
   padding: 0;
@@ -88,12 +100,12 @@ li{
   display:flex;
   justify-content: space-between;
   align-items:center;
+  gap: 12px;
   padding: 14px 16px;
   border-bottom: 1px solid var(--border);
 }
 li:last-child{ border-bottom: 0; }
 
-/* Pill solo para links dentro de lista */
 li a{
   padding: 6px 12px;
   border-radius: 999px;
@@ -107,6 +119,55 @@ li a:hover{
   text-decoration: none;
 }
 
+.list-actions{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap: 10px;
+}
+.list-actions a,
+.list-actions button{
+  min-width: 110px;
+  text-align:center;
+}
+.list-actions button{
+  padding: 8px 14px;
+  box-shadow: none;
+}
+
+.page-actions{
+  width: min(720px, 100%);
+  display:flex;
+  flex-wrap:wrap;
+  gap: 12px;
+}
+.page-actions > *{
+  flex: 1 1 220px;
+}
+.page-actions button,
+.page-actions a{
+  width: 100%;
+}
+
+.content-list{
+  width: min(720px, 100%);
+  display:grid;
+  gap: 10px;
+}
+
+.chart-card{
+  width: min(100%, 280px);
+  min-height: 240px;
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.factor-chart-card{
+  width: min(100%, 360px);
+}
+
 .card{
   background: var(--card);
   border: 1px solid var(--border);
@@ -114,13 +175,14 @@ li a:hover{
   box-shadow: var(--shadow);
 }
 
-.muted{ color: var(--muted); }
-.center{ text-align:center; }
-
-/* Responsive base */
 img{
   max-width: 100%;
   height: auto;
+}
+
+canvas{
+  display:block;
+  max-width:100%;
 }
 
 @media (max-width: 768px){
@@ -134,18 +196,25 @@ img{
   li{
     flex-direction: column;
     align-items: flex-start;
-    gap: 10px;
   }
 
-  li a{
+  .list-actions,
+  .page-actions{
     width: 100%;
-    text-align: center;
+  }
+
+  li a,
+  .list-actions button,
+  .list-actions a,
+  .page-actions > *{
+    width: 100%;
   }
 }
 
 @media (max-width: 480px){
   input,
   select,
+  textarea,
   button{
     font-size: 16px;
   }

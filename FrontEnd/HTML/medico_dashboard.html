@@ -1,28 +1,27 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel del Médico</title>
+    <title>Panel del Medico</title>
     <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/medico_dashboard.css">
     <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/base.css">
 </head>
 <body>
 <img src="/GlucoPredict-AI/FrontEnd/img/logo.png" alt="Logo" class="corner-logo" onclick="window.location.href='../HTML/panel_principal.html'">
 
-<h2>Mis Clínicas</h2>
+<h2>Mis clinicas</h2>
 
 <ul id="listaClinicas"></ul>
 
-<button onclick="window.location.href='agregar_clinica.html'">Agregar clínica</button>
-
-<br><br>
-<button onclick="window.location.href='panel_principal.html'">Volver al Panel Principal</button>
+<div class="page-actions compact-actions">
+    <button onclick="window.location.href='agregar_clinica.html'">Agregar clinica</button>
+    <button class="btn-ghost" onclick="window.location.href='panel_principal.html'">Volver al panel principal</button>
+</div>
 
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/medico_dashboard.js"></script>
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>
 
 </body>
 </html>
-

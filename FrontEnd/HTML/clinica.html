@@ -22,12 +22,11 @@
 <h3>Pacientes</h3>
 <ul id="listaPacientes"></ul>
 
-<button id="btnAgregarPaciente">Agregar paciente</button>
-
-<br><br>
-<button onclick="window.location.href='medico_dashboard.html'">
-    Volver a las clinicas
-</button>
+<div class="page-actions compact-actions">
+    <button id="btnAgregarPaciente">Agregar paciente</button>
+    <button id="btnEliminarClinica" class="danger-button">Eliminar clinica</button>
+    <button class="btn-ghost" onclick="window.location.href='medico_dashboard.html'">Volver a las clinicas</button>
+</div>
 
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/clinica.js"></script>
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>

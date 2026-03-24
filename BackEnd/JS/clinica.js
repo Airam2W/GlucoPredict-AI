@@ -1,8 +1,8 @@
 ﻿import { auth, db } from "./configurationFirebase.js";
 import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { deleteClinicaCompleta, deletePacienteCompleto } from "./crud_helpers.js";
 
-// Obtener ID desde URL
 const params = new URLSearchParams(window.location.search);
 const clinicaId = params.get("id");
 
@@ -15,6 +15,7 @@ const especialidadClinica = document.getElementById("especialidadClinica");
 const horarioClinica = document.getElementById("horarioClinica");
 const listaPacientes = document.getElementById("listaPacientes");
 const btnAgregarPaciente = document.getElementById("btnAgregarPaciente");
+const btnEliminarClinica = document.getElementById("btnEliminarClinica");
 
 if (!clinicaId) {
     alert("Clinica no encontrada");
@@ -28,13 +29,49 @@ function textoSeguro(valor, prefijo = "") {
     return `${prefijo}${valor}`;
 }
 
+function crearItemPaciente(user, pacienteId, paciente) {
+    const li = document.createElement("li");
+    const edadTexto = paciente.edad ? ` (Edad: ${paciente.edad})` : "";
+
+    const descripcion = document.createElement("span");
+    descripcion.textContent = `${paciente.nombre || "Paciente sin nombre"}${edadTexto}`;
+
+    const acciones = document.createElement("div");
+    acciones.className = "list-actions";
+
+    const link = document.createElement("a");
+    link.href = `paciente.html?id=${pacienteId}&clinica=${clinicaId}`;
+    link.textContent = "Ver perfil";
+
+    const btnEliminar = document.createElement("button");
+    btnEliminar.type = "button";
+    btnEliminar.className = "danger-button";
+    btnEliminar.textContent = "Eliminar";
+    btnEliminar.addEventListener("click", async () => {
+        const confirmado = window.confirm(`Eliminar al paciente ${paciente.nombre || "seleccionado"}?`);
+        if (!confirmado) {
+            return;
+        }
+
+        await deletePacienteCompleto(user.uid, clinicaId, pacienteId);
+        li.remove();
+
+        if (!listaPacientes.children.length) {
+            listaPacientes.innerHTML = "<li>No hay pacientes registrados</li>";
+        }
+    });
+
+    acciones.append(link, btnEliminar);
+    li.append(descripcion, acciones);
+    return li;
+}
+
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = "../../index.html";
         return;
     }
 
-    // Obtener datos de la clinica
     const clinicaRef = doc(db, "users", user.uid, "clinicas", clinicaId);
     const clinicaSnap = await getDoc(clinicaRef);
 
@@ -52,37 +89,29 @@ onAuthStateChanged(auth, async (user) => {
     especialidadClinica.textContent = textoSeguro(clinica.especialidad, "Especialidad: ");
     horarioClinica.textContent = textoSeguro(clinica.horario, "Horario: ");
 
-    // Obtener pacientes
-    const pacientesRef = collection(
-        db, "users", user.uid, "clinicas", clinicaId, "pacientes"
-    );
-
+    const pacientesRef = collection(db, "users", user.uid, "clinicas", clinicaId, "pacientes");
     const snapshot = await getDocs(pacientesRef);
     listaPacientes.innerHTML = "";
 
     if (snapshot.empty) {
         listaPacientes.innerHTML = "<li>No hay pacientes registrados</li>";
-        return;
+    } else {
+        snapshot.forEach((docSnap) => {
+            listaPacientes.appendChild(crearItemPaciente(user, docSnap.id, docSnap.data()));
+        });
     }
 
-    snapshot.forEach((docSnap) => {
-        const paciente = docSnap.data();
+    btnEliminarClinica.onclick = async () => {
+        const confirmado = window.confirm(`Eliminar la clinica ${clinica.nombre || "seleccionada"} y todos sus pacientes?`);
+        if (!confirmado) {
+            return;
+        }
 
-        const li = document.createElement("li");
-        const edadTexto = paciente.edad ? ` (Edad: ${paciente.edad})` : "";
-
-        li.innerHTML = `
-            ${paciente.nombre || "Paciente sin nombre"}${edadTexto}
-            <a href="paciente.html?id=${docSnap.id}&clinica=${clinicaId}">
-                Ver perfil
-            </a>
-        `;
-
-        listaPacientes.appendChild(li);
-    });
+        await deleteClinicaCompleta(user.uid, clinicaId);
+        window.location.href = "medico_dashboard.html";
+    };
 });
 
-// Boton agregar paciente
 btnAgregarPaciente.onclick = () => {
     window.location.href = `agregar_paciente.html?clinica=${clinicaId}`;
 };

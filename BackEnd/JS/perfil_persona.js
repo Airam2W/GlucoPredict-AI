@@ -2,10 +2,8 @@
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { calcularRiesgo, obtenerExplicacionesGeneral, obtenerRecomendaciones } from "./prediccion.js";
+import { deletePerfilCompleto } from "./crud_helpers.js";
 
-/* -----------------------------
-   PARAMETROS URL
------------------------------ */
 const params = new URLSearchParams(window.location.search);
 const perfilId = params.get("id");
 
@@ -14,9 +12,6 @@ if (!perfilId) {
     window.location.href = "panel_principal.html";
 }
 
-/* -----------------------------
-   DOM
------------------------------ */
 const nombreEl = document.getElementById("nombrePerfil");
 const edadEl = document.getElementById("edadPerfil");
 const sexoEl = document.getElementById("sexoPerfil");
@@ -31,8 +26,10 @@ const historialEl = document.getElementById("estadoHistorial");
 const riesgoEl = document.getElementById("riesgoPrediccion");
 const explicacionesEl = document.getElementById("explicacionesPrediccion");
 const recomendacionesEl = document.getElementById("recomendacionesPrediccion");
-
 const btnHistorial = document.getElementById("btnHistorial");
+const btnSimular = document.getElementById("btnSimular");
+const btnVolver = document.getElementById("btnVolver");
+const btnEliminarPerfil = document.getElementById("btnEliminarPerfil");
 
 let riesgoChartInstance = null;
 let factoresChartInstance = null;
@@ -82,31 +79,29 @@ function crearGraficaFactores(historial) {
         Edad: historial.edad >= 45 ? 15 : 0,
         IMC: historial.imc >= 30 ? 20 : historial.imc >= 25 ? 10 : 0,
         Glucosa: historial.glucosa >= 126 ? 30 : historial.glucosa >= 100 ? 15 : 0,
-        Presión: historial.presion_sistolica >= 140 ? 10 : historial.presion_sistolica >= 120 ? 5 : 0,
+        Presion: historial.presion_sistolica >= 140 ? 10 : historial.presion_sistolica >= 120 ? 5 : 0,
         Antecedentes: historial.antecedentes_familiares_diabetes ? 20 : 0,
         Actividad: historial.actividad_fisica ? historial.actividad_fisica === "sedentario" ? 10 : 0 : 0
     };
 
-    // Colores dinámicos según riesgo
-    const colores = Object.keys(factores).map(factor => {
+    const colores = Object.keys(factores).map((factor) => {
         switch (factor) {
             case "IMC":
-                if (historial.imc >= 30) return "red";      // Alto
-                if (historial.imc >= 25) return "yellow";   // Medio
-                return "green";                             // Bajo
+                if (historial.imc >= 30) return "red";
+                if (historial.imc >= 25) return "yellow";
+                return "green";
             case "Glucosa":
-                if (historial.glucosa >= 126) return "red";     // Alto
-                if (historial.glucosa >= 100) return "yellow";  // Medio
-                return "green";                                 // Bajo
-            case "Presión":
-                if (historial.presion_sistolica >= 140) return "red";     // Alto
-                if (historial.presion_sistolica >= 120) return "yellow";  // Medio
-                return "green";                                           // Bajo
+                if (historial.glucosa >= 126) return "red";
+                if (historial.glucosa >= 100) return "yellow";
+                return "green";
+            case "Presion":
+                if (historial.presion_sistolica >= 140) return "red";
+                if (historial.presion_sistolica >= 120) return "yellow";
+                return "green";
             case "Actividad":
-                if (historial.actividad_fisica === "sedentario") return "red";    // Inactivo
-                return "green";                                                   // Activo
+                return historial.actividad_fisica === "sedentario" ? "red" : "green";
             default:
-                return "#1976D2"; // Azul para los demás
+                return "#1976D2";
         }
     });
 
@@ -121,6 +116,8 @@ function crearGraficaFactores(historial) {
             }]
         },
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             scales: {
                 y: {
                     beginAtZero: true,
@@ -131,7 +128,6 @@ function crearGraficaFactores(historial) {
     });
 }
 
-
 function textoSeguro(valor, sufijo = "") {
     if (valor === null || valor === undefined || valor === "") {
         return "-";
@@ -139,9 +135,6 @@ function textoSeguro(valor, sufijo = "") {
     return `${valor}${sufijo}`;
 }
 
-/* -----------------------------
-   AUTENTICACION + CARGA
------------------------------ */
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = "../../index.html";
@@ -149,15 +142,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     try {
-        /* -----------------------------
-           PERFIL
-        ----------------------------- */
-        const perfilRef = doc(
-            db,
-            "users", user.uid,
-            "perfiles", perfilId
-        );
-
+        const perfilRef = doc(db, "users", user.uid, "perfiles", perfilId);
         const perfilSnap = await getDoc(perfilRef);
 
         if (!perfilSnap.exists()) {
@@ -178,83 +163,79 @@ onAuthStateChanged(auth, async (user) => {
         actividadFisicaEl.innerText = textoSeguro(perfil.actividadFisica);
         observacionesEl.innerText = textoSeguro(perfil.observaciones);
 
-        /* -----------------------------
-           HISTORIAL CLINICO
-        ----------------------------- */
-        const historialRef = doc(
-            db,
-            "users", user.uid,
-            "perfiles", perfilId,
-            "historial_clinico", "actual"
-        );
-
+        const historialRef = doc(db, "users", user.uid, "perfiles", perfilId, "historial_clinico", "actual");
         const historialSnap = await getDoc(historialRef);
 
         if (!historialSnap.exists()) {
             historialEl.innerText = "No registrado";
             riesgoEl.innerText = "-";
-            return;
-        }
+        } else {
+            historialEl.innerText = "Registrado";
 
-        historialEl.innerText = "Registrado";
-
-        const historial = historialSnap.data();
-
-        /* -----------------------------
-           PREDICCION
-        ----------------------------- */
-        const riesgo = await calcularRiesgo(historial);
-        riesgoEl.style.color = "#000";
-        if (riesgo === null) {
-            riesgoEl.innerText = "-";
-        }else if (riesgo < 30) {
-            riesgoEl.innerText = riesgo + "% (Bajo)";
-            riesgoEl.style.color = "#4CAF50";
-        } else if (riesgo < 60) {
-            riesgoEl.innerText = riesgo + "% (Moderado)";
-            riesgoEl.style.color = "#FFC107";
-        } else if (riesgo >= 60) {
-            riesgoEl.innerText = riesgo + "% (Alto)";
-            riesgoEl.style.color = "#F44336";
-        }else {
-            riesgoEl.innerText = "Desconocido";
+            const historial = historialSnap.data();
+            const riesgo = await calcularRiesgo(historial);
             riesgoEl.style.color = "#000";
-        }
-        const explicaciones = await obtenerExplicacionesGeneral(historial);
-        explicacionesEl.innerHTML = "";
-        explicaciones.forEach(explicacion => {
-            const p = document.createElement("p");
-            p.classList.add("explicacion-item");
-            p.innerText = "🔍 " + explicacion;
-            explicacionesEl.appendChild(p);
-        });
-        
-        const recomendaciones = await obtenerRecomendaciones(historial);
-        recomendacionesEl.innerHTML = "";
-        recomendaciones.forEach(recomendacion => {
-            const p = document.createElement("p");
-            p.classList.add("recomendacion-item");
-            p.innerText = "💡 " + recomendacion;
-            recomendacionesEl.appendChild(p);
-        });
-        
-        crearGraficaRiesgo(riesgo);
-        crearGraficaFactores(historial);
 
+            if (riesgo === null) {
+                riesgoEl.innerText = "-";
+            } else if (riesgo < 30) {
+                riesgoEl.innerText = `${riesgo}% (Bajo)`;
+                riesgoEl.style.color = "#4CAF50";
+            } else if (riesgo < 60) {
+                riesgoEl.innerText = `${riesgo}% (Moderado)`;
+                riesgoEl.style.color = "#FFC107";
+            } else if (riesgo >= 60) {
+                riesgoEl.innerText = `${riesgo}% (Alto)`;
+                riesgoEl.style.color = "#F44336";
+            } else {
+                riesgoEl.innerText = "Desconocido";
+            }
+
+            const explicaciones = await obtenerExplicacionesGeneral(historial);
+            explicacionesEl.innerHTML = "";
+            explicaciones.forEach((explicacion) => {
+                const p = document.createElement("p");
+                p.classList.add("explicacion-item");
+                p.innerText = `Analisis: ${explicacion}`;
+                explicacionesEl.appendChild(p);
+            });
+
+            const recomendaciones = await obtenerRecomendaciones(historial);
+            recomendacionesEl.innerHTML = "";
+            recomendaciones.forEach((recomendacion) => {
+                const p = document.createElement("p");
+                p.classList.add("recomendacion-item");
+                p.innerText = `Recomendacion: ${recomendacion}`;
+                recomendacionesEl.appendChild(p);
+            });
+
+            crearGraficaRiesgo(riesgo);
+            crearGraficaFactores(historial);
+        }
+
+        btnEliminarPerfil.onclick = async () => {
+            const confirmado = window.confirm(`Eliminar el perfil ${perfil.nombre || "seleccionado"}?`);
+            if (!confirmado) {
+                return;
+            }
+
+            await deletePerfilCompleto(user.uid, perfilId);
+            window.location.href = "persona_dashboard.html";
+        };
     } catch (error) {
         console.error("Error cargando perfil:", error);
         alert("Error al cargar el perfil");
     }
 });
 
-/* -----------------------------
-   NAVEGACION
------------------------------ */
 btnHistorial.onclick = () => {
-    window.location.href =
-        `historial_clinico.html?tipo=perfil&id=${perfilId}`;
+    window.location.href = `historial_clinico.html?tipo=perfil&id=${perfilId}`;
 };
 
 btnSimular.onclick = () => {
-    window.location.href=`simulador.html?tipo=perfil&id=${perfilId}`
+    window.location.href = `simulador.html?tipo=perfil&id=${perfilId}`;
+};
+
+btnVolver.onclick = () => {
+    window.location.href = "persona_dashboard.html";
 };

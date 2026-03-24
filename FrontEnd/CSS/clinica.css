@@ -1,4 +1,4 @@
-body{
+﻿body{
   min-height: 100vh;
   display:flex;
   flex-direction:column;
@@ -20,8 +20,6 @@ ul{
   overflow:hidden;
 }
 
-button{
+.page-actions{
   width: min(720px, 100%);
 }
-
-br{ display:none; }

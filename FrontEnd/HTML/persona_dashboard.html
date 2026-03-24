@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -14,16 +14,12 @@
 
 <h2>Perfiles registrados</h2>
 
-<ul id="listaPerfiles">
-    <!-- Perfiles se insertan aquí -->
-</ul>
+<ul id="listaPerfiles"></ul>
 
-<button onclick="window.location.href='agregar_perfil.html'">Agregar perfil</button>
-
-<br><br>
-<button onclick="window.location.href='panel_principal.html'">
-    Volver al Panel Principal
-</button>
+<div class="page-actions compact-actions">
+    <button onclick="window.location.href='agregar_perfil.html'">Agregar perfil</button>
+    <button class="btn-ghost" onclick="window.location.href='panel_principal.html'">Volver al panel principal</button>
+</div>
 
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/persona_dashboard.js"></script>
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>

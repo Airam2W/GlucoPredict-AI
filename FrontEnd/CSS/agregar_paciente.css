@@ -1,4 +1,4 @@
-body{
+﻿body{
   min-height: 100vh;
   display:flex;
   flex-direction:column;
@@ -29,25 +29,11 @@ form{
 form br{ display:none; }
 br{ display:none; }
 
-input{
-  width: 100%;
-}
-
-button{
+button,
+.page-actions{
   width: min(520px, 100%);
 }
 
 form button{
   width: 100%;
-}
-
-/* volver como secundario */
-#btnVolver{
-  background: var(--primary-soft);
-  color: var(--primary);
-  box-shadow: none;
-  border: 1px solid rgba(185,211,238,.9);
-}
-#btnVolver:hover{
-  background: #c6dbf3;
 }

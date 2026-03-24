@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial Clínico</title>
+    <title>Historial Clinico</title>
     <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/historial_clinico.css">
     <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/base.css">
 </head>
@@ -12,22 +12,22 @@
     
 <img src="/GlucoPredict-AI/FrontEnd/img/logo.png" alt="Logo" class="corner-logo" onclick="window.location.href='../HTML/panel_principal.html'">
 
-<h2>Historial Clínico</h2>
+<h2>Historial Clinico</h2>
 
 <p>
-    Ingrese la información clínica del paciente o cargue un archivo PDF.
-    Los datos deben ser verificados antes de su análisis.
+    Ingrese la informacion clinica del paciente o cargue un archivo PDF.
+    El sexo se recupera del perfil y el IMC se calcula automaticamente cuando hay peso y altura.
 </p>
 
 <hr>
  
-<h3>Subir historial clínico (PDF)</h3>
+<h3>Subir historial clinico (PDF)</h3>
 <input type="file" id="pdfFile" accept="application/pdf">
 <p id="pdfStatus"></p>
 
 <hr>
 
-<h3>Información personal</h3>
+<h3>Informacion personal</h3>
 
 <form id="historialForm">
 
@@ -38,9 +38,11 @@
 <input type="number" id="age" required><br><br>
 
 <label>Sexo:</label><br>
-<select id="sex">
-    <option value="M">Masculino</option>
-    <option value="F">Femenino</option>
+<select id="sex" required>
+    <option value="" disabled selected>Selecciona una opcion</option>
+    <option value="Masculino">Masculino</option>
+    <option value="Femenino">Femenino</option>
+    <option value="Otro">Otro</option>
 </select><br><br>
 
 <hr>
@@ -54,14 +56,14 @@
 
 <label>
     <input type="checkbox" id="hypertension">
-    Diagnóstico previo de hipertensión
+    Diagnostico previo de hipertension
 </label><br><br>
 
 <hr>
 
-<h3>Hábitos</h3>
+<h3>Habitos</h3>
 
-<label>Actividad física:</label><br>
+<label>Actividad fisica:</label><br>
 <select id="activity">
     <option value="sedentario">Sedentario</option>
     <option value="moderado">Moderado</option>
@@ -77,7 +79,7 @@
 
 <hr>
 
-<h3>Datos clínicos</h3>
+<h3>Datos clinicos</h3>
 
 <label>Indice de Masa Corporal (IMC):</label><br>
 <input type="number" id="bmi" step="0.1" required><br><br>
@@ -85,16 +87,13 @@
 <label>Glucosa en ayunas (mg/dL):</label><br>
 <input type="number" id="glucose" required><br><br>
 
-<label>Presión arterial sistólica (mmHg):</label><br>
+<label>Presion arterial sistolica (mmHg):</label><br>
 <input type="number" id="bp" required><br><br>
 
-<br>
-
-<button type="submit">Guardar historial clínico</button>
-<br><br>
-<button type="button" id="btnVolver">
-    Volver a la predicción
-</button>
+<div class="page-actions compact-actions">
+    <button type="submit">Guardar historial clinico</button>
+    <button type="button" id="btnVolver">Volver a la prediccion</button>
+</div>
 
 </form>
 

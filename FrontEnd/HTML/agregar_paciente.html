@@ -22,16 +22,17 @@
     </select><br><br>
     <input type="number" id="pesoPaciente" placeholder="Peso (kg)" min="1" max="400" step="0.1"><br><br>
     <input type="number" id="alturaPaciente" placeholder="Altura (cm)" min="30" max="250" step="0.1"><br><br>
-    <input type="tel" id="telefonoPaciente" placeholder="Teléfono"><br><br>
-    <input type="email" id="correoPaciente" placeholder="Correo electrónico"><br><br>
+    <input type="tel" id="telefonoPaciente" placeholder="Telefono"><br><br>
+    <input type="email" id="correoPaciente" placeholder="Correo electronico"><br><br>
     <input type="text" id="contactoEmergenciaPaciente" placeholder="Contacto de emergencia"><br><br>
     <input type="text" id="tipoSangrePaciente" placeholder="Tipo de sangre (ej. O+)"><br><br>
     <textarea id="observacionesPaciente" placeholder="Observaciones relevantes" rows="4"></textarea><br><br>
     <button type="submit">Guardar paciente</button>
 </form>
 
-<br>
-<button id="btnVolver">Volver</button>
+<div class="page-actions compact-actions">
+    <button id="btnVolver" class="btn-ghost">Volver</button>
+</div>
 
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/agregar_paciente.js"></script>
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>
