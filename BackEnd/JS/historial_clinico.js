@@ -280,6 +280,10 @@ historialForm.addEventListener("submit", async (e) => {
     await actualizarPersona(user, data);
 
     saveStatus.innerText = "Historial clinico guardado correctamente.";
+    // Presionar btnVolver
+    setTimeout(() => {
+        btnVolver.click();
+    }, 500);
 });
 
 btnVolver.onclick = () => {

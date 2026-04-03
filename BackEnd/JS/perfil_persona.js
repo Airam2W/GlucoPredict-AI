@@ -3,6 +3,14 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { calcularRiesgo, obtenerExplicacionesGeneral, obtenerRecomendaciones } from "./prediccion.js";
 import { deletePerfilCompleto } from "./crud_helpers.js";
+import {
+    collection,
+    getDocs,
+    addDoc,
+    query,
+    orderBy,
+    limit
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const params = new URLSearchParams(window.location.search);
 const perfilId = params.get("id");
@@ -30,12 +38,36 @@ const btnHistorial = document.getElementById("btnHistorial");
 const btnSimular = document.getElementById("btnSimular");
 const btnVolver = document.getElementById("btnVolver");
 const btnEliminarPerfil = document.getElementById("btnEliminarPerfil");
+const fechaPrediccionEl = document.getElementById("fechaPrediccion");
 
 let riesgoChartInstance = null;
 let factoresChartInstance = null;
 
 
+async function obtenerNuevaPrediccion(historial) {
+    try {
+        const timeout = new Promise((_, reject) =>
+            setTimeout(() => reject("timeout"), 7000)
+        );
 
+        const resultado = await Promise.race([
+            (async () => {
+                const riesgo = await calcularRiesgo(historial);
+                const explicaciones = await obtenerExplicacionesGeneral(historial);
+                const recomendaciones = await obtenerRecomendaciones(historial);
+
+                return { riesgo, explicaciones, recomendaciones };
+            })(),
+            timeout
+        ]);
+
+        return resultado;
+
+    } catch (e) {
+        console.warn("API lenta o falló:", e);
+        return null;
+    }
+}
 
 function crearGraficaRiesgo(riesgo) {
     const ctx = document.getElementById("riesgoChart");
@@ -204,6 +236,81 @@ onAuthStateChanged(auth, async (user) => {
             historialEl.innerText = "Registrado";
 
             const historial = historialSnap.data();
+
+            
+            const prediccionesRef = collection(
+                db,
+                "users", user.uid,
+                "perfiles", perfilId,
+                "predicciones"
+            );
+
+            const q = query(prediccionesRef, orderBy("fecha", "desc"), limit(1));
+            const snapshot = await getDocs(q);
+
+            let ultimaPrediccion = null;
+
+            if (!snapshot.empty) {
+                ultimaPrediccion = snapshot.docs[0].data();
+
+                // Mostrar inmediatamente ⚡
+                mostrarPrediccion(
+                    ultimaPrediccion.riesgo,
+                    ultimaPrediccion.explicaciones,
+                    ultimaPrediccion.recomendaciones,
+                    ultimaPrediccion.fecha
+                );
+            }
+
+            const nueva = await obtenerNuevaPrediccion(historial);
+
+            if (!nueva) {
+                // Si ya hay predicción previa, no hacer nada
+                if (!ultimaPrediccion) {
+                    riesgoEl.innerText = "No se pudo obtener predicción";
+                }
+                return;
+            }
+
+            // Si NO hay predicción previa
+            if (!ultimaPrediccion) {
+
+                mostrarPrediccion(
+                    nueva.riesgo,
+                    nueva.explicaciones,
+                    nueva.recomendaciones,
+                    { seconds: Date.now() / 1000 }
+                );
+
+                await addDoc(prediccionesRef, {
+                    ...nueva,
+                    fecha: new Date()
+                });
+
+            } else {
+
+                // Comparar
+                const cambio =
+                    nueva.riesgo !== ultimaPrediccion.riesgo ||
+                    JSON.stringify(nueva.explicaciones) !== JSON.stringify(ultimaPrediccion.explicaciones) ||
+                    JSON.stringify(nueva.recomendaciones) !== JSON.stringify(ultimaPrediccion.recomendaciones);
+
+                if (cambio) {
+                    mostrarPrediccion(
+                        nueva.riesgo,
+                        nueva.explicaciones,
+                        nueva.recomendaciones,
+                        { seconds: Date.now() / 1000 }
+                    );
+
+                    await addDoc(prediccionesRef, {
+                        ...nueva,
+                        fecha: new Date()
+                    });
+                }
+            }
+
+
             const riesgo = await calcularRiesgo(historial);
             riesgoEl.style.color = "#000";
 
@@ -227,7 +334,7 @@ onAuthStateChanged(auth, async (user) => {
             explicaciones.forEach((explicacion) => {
                 const p = document.createElement("p");
                 p.classList.add("explicacion-item");
-                p.innerText = `Analisis: ${explicacion}`;
+                p.innerText = `🔍 Analisis: ${explicacion}`;
                 explicacionesEl.appendChild(p);
             });
 
@@ -236,7 +343,7 @@ onAuthStateChanged(auth, async (user) => {
             recomendaciones.forEach((recomendacion) => {
                 const p = document.createElement("p");
                 p.classList.add("recomendacion-item");
-                p.innerText = `Recomendacion: ${recomendacion}`;
+                p.innerText = `💡 Recomendacion: ${recomendacion}`;
                 recomendacionesEl.appendChild(p);
             });
 
@@ -258,6 +365,45 @@ onAuthStateChanged(auth, async (user) => {
         alert("Error al cargar el perfil");
     }
 });
+
+
+export function mostrarPrediccion(riesgo, explicaciones, recomendaciones, fecha) {
+    // Riesgo
+    if (riesgo < 30) {
+        riesgoEl.innerText = `${riesgo}% (Bajo)`;
+        riesgoEl.style.color = "#4CAF50";
+    } else if (riesgo < 60) {
+        riesgoEl.innerText = `${riesgo}% (Moderado)`;
+        riesgoEl.style.color = "#FFC107";
+    } else {
+        riesgoEl.innerText = `${riesgo}% (Alto)`;
+        riesgoEl.style.color = "#F44336";
+    }
+
+    // Fecha
+    if (fecha) {
+        const fechaFormateada = new Date(fecha.seconds * 1000).toLocaleString();
+        fechaPrediccionEl.innerText = "Última predicción: " + fechaFormateada;
+    }
+
+    // Explicaciones
+    explicacionesEl.innerHTML = "";
+    explicaciones.forEach(e => {
+        const p = document.createElement("p");
+        p.innerText = "🔍 Análisis: " + e;
+        explicacionesEl.appendChild(p);
+    });
+
+    // Recomendaciones
+    recomendacionesEl.innerHTML = "";
+    recomendaciones.forEach(r => {
+        const p = document.createElement("p");
+        p.innerText = "💡 Recomendación: " + r;
+        recomendacionesEl.appendChild(p);
+    });
+
+    crearGraficaRiesgo(riesgo);
+}
 
 btnHistorial.onclick = () => {
     window.location.href = `historial_clinico.html?tipo=perfil&id=${perfilId}`;
