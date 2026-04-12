@@ -1,248 +1,757 @@
 ﻿/* =========================
    BASE
 ========================= */
-body{
+body {
   min-height: 100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 20px;
-  padding: 24px 16px;
+  padding: 0 0 24px;
 }
 
-h1{
+h1 {
   margin: 0;
   font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1.2;
+  color: var(--text);
+}
+
+h1 span {
   color: var(--primary);
 }
 
-h2{
-  margin:0;
+h2 {
+  margin: 0;
   color: var(--primary);
 }
 
-p{
+p {
   margin: 0;
   color: var(--muted);
-  text-align:center;
+  text-align: center;
   max-width: 60ch;
+  font-size: 1.05rem;
+  line-height: 1.5;
 }
 
 /* =========================
    NAVBAR
 ========================= */
-.navbar{
+.navbar {
   width: 100%;
-  max-width: 1100px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
+  max-width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 40px;
+  border-bottom: 1px solid rgba(77, 141, 198, 0.12);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.logo-nav{
+/* Logo compuesto */
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-mark .mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.logo-nav {
   width: 48px;
 }
 
-.nav-actions{
-  display:flex;
-  gap: 10px;
+.nav-actions {
+  display: flex;
+  gap: 8px;
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.nav-actions a {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 8px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-actions a:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.nav-actions .btn-primary {
+  color: #fff;
+  padding: 8px 18px;
+}
+
+.nav-actions .btn-primary:hover {
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary), #5fa2d6);
 }
 
 /* =========================
    HERO
 ========================= */
-.hero{
+.hero {
   width: 100%;
   max-width: 1100px;
-  display:flex;
-  gap: 40px;
-  align-items:center;
-  justify-content:space-between;
+  display: flex;
+  gap: 60px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 60px 40px;
+  animation: fadeIn 0.8s ease;
 }
 
-.hero-text{
-  flex:1;
-  display:flex;
-  flex-direction:column;
+.hero-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hero-text p {
+  text-align: left;
+}
+
+.logo-hero {
+  width: 380px;
+  margin-bottom: 4px;
+}
+
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid rgba(77, 141, 198, 0.3);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  width: fit-content;
+  letter-spacing: 0.4px;
+}
+
+.badge .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+/* Trust strip */
+.trust-strip {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.trust-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+/* Hero buttons */
+.hero-buttons {
+  display: flex;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
-.logo-hero{
-  width: auto;
-  margin-bottom: 10px;
+/* =========================
+   LOGIN CARD (PRO)
+========================= */
+.hero-card {
+  flex: 0 0 360px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  padding: 28px;
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(31, 42, 68, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.hero-card{
-  flex:1;
-  max-width: 400px;
-  background: rgba(255,255,255,0.95);
-  padding: 20px;
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+.hero-card h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text);
 }
 
 /* =========================
    FORM
 ========================= */
-form{
-  display:flex;
-  flex-direction:column;
-  gap: 10px;
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-input{
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
 
-button{
-  padding: 5px;
-  border-radius: 10px;
-  cursor:pointer;
+.field label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  letter-spacing: 0.4px;
+}
+
+input {
+  padding: 11px 14px;
+  border-radius: 11px;
+  border: 1.5px solid var(--border);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+input::placeholder {
+  color: #b0bac9;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(77, 141, 198, 0.18);
 }
 
 /* =========================
    BOTONES
 ========================= */
-.btn-primary{
-  background: var(--primary);
-  color: white;
-  padding: 10px 14px;
-  border-radius: 10px;
-  text-decoration:none;
+button {
+  font-weight: 700;
 }
 
-.btn-secondary{
-  border: 1px solid var(--primary);
-  padding: 10px 14px;
-  border-radius: 10px;
-  text-decoration:none;
+.btn-submit {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, var(--primary), #5fa2d6);
+  color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(77, 141, 198, 0.3);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--primary), #5fa2d6);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(77, 141, 198, 0.3);
+  text-decoration: none;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid var(--border);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  text-decoration: none;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.divider hr {
+  flex: 1;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+.divider span {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Google button */
+#googleLogin {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 11px;
+  border: 1.5px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+#googleLogin:hover {
+  background: var(--primary-soft);
+  border-color: rgba(77, 141, 198, 0.4);
+  transform: none;
+  box-shadow: none;
+  filter: none;
+}
+
+.registro-link {
+  text-align: center;
+  margin-top: 14px !important;
+  font-size: 12px;
+  color: var(--muted);
+  max-width: none;
+}
+
+.registro-link a {
+  color: var(--primary);
+  font-weight: 700;
 }
 
 /* =========================
    FEATURES / CARDS
 ========================= */
-.features{
+.features {
   width: 100%;
   max-width: 1100px;
-  text-align:center;
+  text-align: center;
+  margin-top: 20px;
+  padding: 0 40px;
 }
 
-.cards{
-  display:flex;
-  flex-wrap:wrap;
+.features > p {
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
   gap: 20px;
-  justify-content:center;
-  margin-top: 10px;
+  justify-content: center;
+  margin-top: 24px;
 }
 
-.card{
+.card {
   width: 260px;
-  background: rgba(255,255,255,0.9);
-  padding: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 24px;
   border-radius: 18px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Ícono en card */
+.card-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.card-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.card h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  margin-top: 0;
+}
+
+.card p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.55;
+  text-align: left;
 }
 
 /* =========================
    SECTIONS
 ========================= */
-.section{
+.section {
   max-width: 700px;
-  text-align:center;
+  text-align: center;
+}
+
+.problem-section {
+  padding: 48px 40px;
+  background: rgba(255, 255, 255, 0.5);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.problem-section h2 {
+  margin-bottom: 10px;
 }
 
 /* =========================
    CTA
 ========================= */
-.cta{
-  text-align:center;
+.cta {
+  text-align: center;
   margin-top: 20px;
+  padding: 48px 40px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, var(--primary-soft), #eef5fc);
+  border: 1px solid rgba(77, 141, 198, 0.2);
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.cta h2 {
+  margin-top: 4px;
+}
+
+.cta p {
+  margin-bottom: 8px;
+}
+
+.cta-badge {
+  display: inline-block;
+  background: rgba(90, 200, 176, 0.15);
+  color: #0f6e56;
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 /* =========================
    FOOTER
 ========================= */
-footer{
-  margin-top: 30px;
+footer {
+  margin-top: 20px;
   opacity: 0.6;
-}
-
-/* =========================
-   GOOGLE BUTTON
-========================= */
-#googleLogin{
-  background: var(--primary-soft);
-  color: var(--primary);
-  border: 1px solid rgba(185,211,238,.9);
 }
 
 /* =========================
    ANIMATION
 ========================= */
-.hero{
-  animation: fadeIn 0.8s ease;
-}
-
-@keyframes fadeIn{
-  from{ opacity:0; transform: translateY(10px);}
-  to{ opacity:1; transform: translateY(0);}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* =========================
    RESPONSIVE
 ========================= */
-@media (max-width: 900px){
-
-  .hero{
+@media (max-width: 900px) {
+  .hero {
     flex-direction: column;
-    gap: 25px;
+    gap: 30px;
+    padding: 40px 24px;
   }
 
-  .hero-card{
+  .hero-card {
+    flex: none;
     width: 100%;
     max-width: 500px;
   }
 
-  .hero-text{
+  .hero-text {
     align-items: center;
     text-align: center;
   }
 
-}
-
-@media (max-width: 600px){
-
-  body{
-    padding: 16px 10px;
+  .hero-text p {
+    text-align: center;
   }
 
-  h1{
+  .badge {
+    align-self: center;
+  }
+
+  .trust-strip {
+    justify-content: center;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+  }
+
+  .navbar {
+    padding: 14px 24px;
+  }
+
+  .features {
+    padding: 0 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 0 0 16px;
+  }
+
+  h1 {
     font-size: 1.6rem;
   }
 
-  p{
-    font-size: 0.9rem;
+  p {
+    font-size: 0.95rem;
   }
 
-  .navbar{
-    flex-direction: column;
-    gap: 10px;
+  .navbar {
+    padding: 12px 16px;
   }
 
-  .nav-actions{
-    justify-content:center;
+  .nav-actions .btn-primary {
+    display: none;
   }
 
-  .card{
+  .hero {
+    padding: 32px 16px;
+  }
+
+  .features {
+    padding: 0 16px;
+  }
+
+  .card {
     width: 100%;
   }
 
-  .hero-card{
-    padding: 16px;
+  .hero-card {
+    padding: 20px;
   }
 
+  .problem-section {
+    padding: 32px 16px;
+  }
+
+  .cta {
+    padding: 36px 20px;
+    margin: 20px 16px;
+    width: calc(100% - 32px);
+    max-width: none;
+  }
 }
 
+/* =========================
+   MODAL LOGIN
+========================= */
+.modal-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  inset: 0;
+  background: rgba(31, 42, 68, 0.45);
+  backdrop-filter: blur(6px);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 22px;
+  box-shadow: 0 32px 80px rgba(31, 42, 68, 0.2);
+  padding: 36px 32px 28px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transform: translateY(24px) scale(0.97);
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+  opacity: 0;
+}
+
+.modal-overlay.active .modal-card {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--muted);
+  box-shadow: none;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+
+.modal-close:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+  transform: none;
+  box-shadow: none;
+  filter: none;
+}
+
+.modal-logo {
+  width: 44px;
+  height: auto;
+  margin-bottom: 12px;
+}
+
+.modal-card h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+/* =========================
+   HERO CENTRADO (sin card)
+========================= */
+.hero-centered {
+  justify-content: center;
+  max-width: 700px;
+  padding: 80px 40px 60px;
+}
+
+.hero-centered .hero-text {
+  align-items: center;
+  text-align: center;
+  max-width: 620px;
+}
+
+.hero-centered .hero-text p {
+  text-align: center;
+}
+
+.hero-centered .trust-strip {
+  justify-content: center;
+}
+
+.hero-centered .hero-buttons {
+  justify-content: center;
+}
+
+@media (max-width: 600px) {
+  .modal-card {
+    margin: 16px;
+    padding: 28px 20px 22px;
+  }
+
+  .hero-centered {
+    padding: 48px 16px 40px;
+  }
+}
