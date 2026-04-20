@@ -81,7 +81,7 @@ function crearGraficaRiesgo(riesgo) {
     riesgoChartInstance = new Chart(ctx, {
         type: "doughnut",
         data: {
-            labels: ["Riesgo", "Restante"],
+            labels: ["Riesgo", "-"],
             datasets: [{
                 data: [riesgo, 100 - riesgo],
                 backgroundColor: [
@@ -294,6 +294,7 @@ onAuthStateChanged(auth, async (user) => {
 
                 await addDoc(prediccionesRef, {
                     ...nueva,
+                    historialSnapshot: historial, // 🔥 CLAVE
                     fecha: new Date()
                 });
 
@@ -315,6 +316,7 @@ onAuthStateChanged(auth, async (user) => {
 
                     await addDoc(prediccionesRef, {
                         ...nueva,
+                        historialSnapshot: historial,
                         fecha: new Date()
                     });
                 }

@@ -78,21 +78,21 @@ function normalizarSexo(valor) {
 
 function normalizarActividad(valor) {
     const texto = String(valor || "").trim().toLowerCase();
-
-    if (!texto) {
-        return "";
-    }
-    if (["alta", "activo"].includes(texto)) {
-        return "activo";
-    }
-    if (["moderada", "moderado"].includes(texto)) {
-        return "moderado";
-    }
-    if (["baja", "sedentario"].includes(texto)) {
-        return "sedentario";
-    }
+    if (!texto) return "";
+    if (["alta", "activo", "activa"].includes(texto)) return "activo";
+    if (["moderada", "moderado"].includes(texto)) return "moderado";
+    if (["baja", "sedentario", "sedentaria"].includes(texto)) return "sedentario";
     return "";
 }
+
+function normalizarAlcohol(valor) {
+    const texto = String(valor || "").trim().toLowerCase();
+    if (["no", "nunca"].includes(texto)) return "No";
+    if (["ocasional", "social"].includes(texto)) return "Ocasional";
+    if (["frecuente", "sí", "si"].includes(texto)) return "Frecuente";
+    return "";
+}
+
 
 function calcularIMC(peso, alturaCm) {
     const pesoNum = Number(peso);
@@ -136,7 +136,7 @@ function actualizarInputs(datos) {
         activityInput.value = normalizarActividad(datos.actividad_fisica);
     }
     if (datos.alcohol) {
-        alcoholInput.value = String(datos.alcohol).trim().toLowerCase();
+        alcoholInput.value = normalizarAlcohol(datos.alcohol);
     }
 }
 
@@ -179,13 +179,16 @@ async function cargarDatosPersona(user) {
 
 function extraerTexto(texto, regex, grupo = 1) {
     const match = texto.match(regex);
-    return match ? match[grupo].trim() : "";
+    return match ? match[grupo].trim() : null;
 }
 
 function extraerNumero(texto, regex, grupo = 1) {
     const match = texto.match(regex);
-    return match ? Number.parseFloat(match[grupo]) : "";
+    if (!match) return null;
+    const valor = match[grupo].replace(",", ".");
+    return Number.parseFloat(valor);
 }
+
 
 async function leerPDF(file) {
     const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
@@ -201,26 +204,27 @@ async function leerPDF(file) {
 }
 
 function extraerDatos(texto) {
-    const sexoRaw = extraerTexto(texto, /Sexo[:\s]+(Masculino|Femenino|M|F|Otro)/i);
-    const presionMatch = texto.match(/(TA|PA|Presion arterial|Presi[oó]n arterial)[:\s]+(\d{2,3})\/(\d{2,3})/i);
+    const sexoRaw = extraerTexto(texto, /Sexo[:\s]*(Masculino|Femenino|M|F|Otro)/i);
+    const presionMatch = texto.match(/(TA|PA|Presi[oó]n arterial|Tensi[oó]n arterial)[:\s]*(\d{2,3})[\/\-](\d{2,3})/i);
 
     return {
         nombre: extraerTexto(
             texto,
-            /(Nombre del paciente|Nombre|Paciente)[:\s]+([A-Za-zÁÉÍÓÚÑ\s]+)/i,
+            /(Nombre del paciente|Nombre|Paciente)[:\s]*([A-Za-zÁÉÍÓÚÑ\s]+)/i,
             2
         ),
-        edad: extraerNumero(texto, /Edad[:\s]+(\d{1,3})/i),
+        edad: extraerNumero(texto, /Edad[:\s]*(\d{1,3})/i),
         sexo: normalizarSexo(sexoRaw),
-        imc: extraerNumero(texto, /(IMC|Indice de masa corporal|Índice de masa corporal)[:\s]+([\d.]+)/i, 2),
-        glucosa: extraerNumero(texto, /Glucosa(?: en ayuno)?[:\s]+(\d{2,3})/i),
+        imc: extraerNumero(texto, /(IMC|Indice de masa corporal|Índice de masa corporal)[:\s]*([\d.,]+)/i, 2),
+        glucosa: extraerNumero(texto, /Glucosa(?: en ayuno)?[:\s]*(\d{2,3})/i),
         presion_sistolica: presionMatch ? Number(presionMatch[2]) : "",
-        antecedentes_familiares_diabetes: /antecedentes.*diabetes/i.test(texto),
+        antecedentes_familiares_diabetes: /(antecedentes.*diabetes|familia.*diabetes)/i.test(texto),
         hipertension: /hipertensi[oó]n/i.test(texto),
-        actividad_fisica: extraerTexto(texto, /Actividad f[ií]sica[:\s]+(Sedentario|Moderado|Activo)/i),
-        alcohol: extraerTexto(texto, /Alcohol[:\s]+(No|Ocasional|Frecuente)/i)
+        actividad_fisica: extraerTexto(texto, /Actividad f[ií]sica[:\s]*(Sedentario|Moderado|Activo|Alta|Baja)/i),
+        alcohol: extraerTexto(texto, /Alcohol[:\s]*(No|Ocasional|Frecuente|Nunca|Sí)/i)
     };
 }
+
 
 async function procesarPDF(e) {
     const file = e.target.files[0];

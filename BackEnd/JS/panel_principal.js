@@ -17,8 +17,8 @@ onAuthStateChanged(auth, async (user) => {
     window.user = userSnap.data();
     console.log("Usuario actual:", window.user);
     
-    if (window.user.tipo === "PAGA") {
-      document.getElementById("pagaButton").style.display = "none";
+    if (window.user.tipo === "GRATIS") {
+      document.getElementById("pagaButton").style.display = "block";
     }
   } else {
     console.log("No existe documento para este usuario en Firestore");

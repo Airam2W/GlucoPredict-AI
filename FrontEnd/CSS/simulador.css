@@ -24,3 +24,7 @@
         button {
             margin-top: 15px;
         }
+
+#graficasEl{
+    display: none;
+}

@@ -20,6 +20,17 @@
         <p><strong>Riesgo actual:</strong> <span id="riesgoActual">-</span>%</p>
     </div>
 
+    <!-- Historial de predicciones -->
+    <div class="card">
+        <h4>Historial de predicciones:</h4>
+        <div id="historialPredicciones" style="
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 5px;
+        "></div>
+    </div>
+
     <!-- CONTROLES -->
     <div class="card">
         <h3>Configuración</h3>
@@ -41,13 +52,32 @@
         <button id="btnVaciarGrafica">Vaciar gráfica</button>
     </div>
 
-    <!-- RESULTADO -->
-    <div class="card">
-        <h3>Resultado</h3>
+    <!-- Graficas -->
+    <div class="card" id="graficasEl">
+        <h3>Resultados:</h3>
+
+        <h4>Riesgo</h4>
+        <!-- Grafica de riesgo -->
         <canvas id="graficaRiesgo"></canvas>
-        <p id="interpretacion"></p>
+        <p id="interpretacionRiesgo"></p>
         <p id="riesgoFinal"></p>
-        <p id="mensajeFinal">Recuerda que estos resultados son estimaciones y pueden variar según tu situación individual.</p>
+
+        
+        <!-- Grafica de IMC-->
+        <br>
+        <h4>Índice de Masa Corporal (IMC)</h4>
+        <canvas id="graficaIMC"></canvas>
+        <p id="interpretacionIMC"></p>
+        <p id="imcFinal"></p>
+
+        <!-- Grafica de glucosa -->
+        <br>
+        <h4>Glucosa en sangre</h4>
+        <canvas id="graficaGlucosa"></canvas>
+        <p id="interpretacionGlucosa"></p>
+        <p id="glucosaFinal"></p>
+
+        <p id="mensajeFinal" style="font-style: italic;">Recuerda que estos resultados son estimaciones y pueden variar según tu situación individual.</p>
     </div>
 
     <button id="btnVolver">Volver</button>
