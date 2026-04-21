@@ -3,66 +3,59 @@ import { auth, db } from "./configurationFirebase.js";
 import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const form = document.getElementById("registroForm");
-const errorMsg = document.createElement("p");
-errorMsg.style.color = "red";
-form.appendChild(errorMsg);
+const emailInput = document.getElementById("emailInput");
+const passwordInput = document.getElementById("passwordInput");
 
-form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+if (form && emailInput && passwordInput) {
+    const errorMsg = document.createElement("p");
+    errorMsg.className = "form-feedback is-error";
+    form.appendChild(errorMsg);
 
-    const email = emailInput.value.trim();
-    const password = passwordInput.value;
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    errorMsg.innerText = "";
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
 
-    // -----------------------------
-    // VALIDACIONES PROPIAS
-    // -----------------------------
-    if (!email.includes("@") || !email.includes(".")) {
-        errorMsg.innerText = "Correo no válido.";
-        return;
-    }
+        errorMsg.innerText = "";
 
-    if (password.length < 6) {
-        errorMsg.innerText = "La contraseña debe tener al menos 6 caracteres.";
-        return;
-    }
-
-    try {
-        const cred = await createUserWithEmailAndPassword(auth, email, password);
-
-        // -----------------------------
-        // GUARDAR EN FIRESTORE
-        // -----------------------------
-        await setDoc(doc(db, "users", cred.user.uid), {
-            email,
-            tipo: "GRATIS", // 🔥 IMPORTANTE
-            createdAt: new Date()
-        });
-
-        console.log("Usuario registrado:", cred.user);
-
-        // Redirigir a pantalla de pago
-        window.location.href = "paga.html?where=registro";
-
-    } catch (error) {
-        console.error(error);
-
-        // -----------------------------
-        // ERRORES FIREBASE
-        // -----------------------------
-        switch (error.code) {
-            case "auth/email-already-in-use":
-                errorMsg.innerText = "El correo ya está registrado.";
-                break;
-            case "auth/invalid-email":
-                errorMsg.innerText = "Formato de correo inválido.";
-                break;
-            case "auth/weak-password":
-                errorMsg.innerText = "La contraseña es muy débil.";
-                break;
-            default:
-                errorMsg.innerText = "Error al registrar usuario.";
+        if (!email.includes("@") || !email.includes(".")) {
+            errorMsg.innerText = "Correo no valido.";
+            return;
         }
-    }
-});
+
+        if (password.length < 6) {
+            errorMsg.innerText = "La contrasena debe tener al menos 6 caracteres.";
+            return;
+        }
+
+        try {
+            const cred = await createUserWithEmailAndPassword(auth, email, password);
+
+            await setDoc(doc(db, "users", cred.user.uid), {
+                email,
+                tipo: "GRATIS",
+                createdAt: new Date()
+            });
+
+            console.log("Usuario registrado:", cred.user);
+            window.location.href = "/GlucoPredict-AI/FrontEnd/HTML/paga.html?where=registro";
+        } catch (error) {
+            console.error(error);
+
+            switch (error.code) {
+                case "auth/email-already-in-use":
+                    errorMsg.innerText = "El correo ya esta registrado.";
+                    break;
+                case "auth/invalid-email":
+                    errorMsg.innerText = "Formato de correo invalido.";
+                    break;
+                case "auth/weak-password":
+                    errorMsg.innerText = "La contrasena es muy debil.";
+                    break;
+                default:
+                    errorMsg.innerText = "Error al registrar usuario.";
+            }
+        }
+    });
+}

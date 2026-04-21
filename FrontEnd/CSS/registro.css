@@ -1,48 +1,64 @@
-body{
+body.registro-page {
   min-height: 100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  padding: 32px 16px;
-  gap: 14px;
+  margin: 0;
 }
 
-h2{
-  margin:0;
-  color: var(--primary);
+.registro-overlay-static {
+  position: static;
+  min-height: 100vh;
+  opacity: 1;
+  pointer-events: all;
+  padding: 24px 16px;
 }
 
-form{
-  width: min(520px, 100%);
-  padding: 18px 20px;
+.registro-card-static {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  opacity: 1;
+  transform: none;
 }
 
-/* Quita los <br> que separan demasiado dentro del form */
-form br { display: none; }
+.registro-card-static h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+}
 
-label{
-  display:block;
-  margin: 0 0 6px;
+.registro-card-static form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.registro-card-static .field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.registro-card-static .field label {
+  font-size: 11px;
   font-weight: 700;
   color: var(--muted);
+  letter-spacing: 0.4px;
 }
 
-input, select{
-  margin: 0 0 10px;
+.registro-card-static .btn-submit {
+  width: 100%;
 }
 
-form a{
-  display:inline-block;
-  margin-top: 6px;
-  padding: 10px 14px;
-  border-radius: 14px;
-  background: var(--primary-soft);
-  border: 1px solid rgba(185,211,238,.9);
-  text-decoration:none;
+.registro-back {
+  text-decoration: none;
 }
-form a:hover{ text-decoration:none; }
 
-button{
-  width: min(520px, 100%);
+.registro-back:hover {
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .registro-overlay-static {
+    padding: 16px;
+  }
 }
