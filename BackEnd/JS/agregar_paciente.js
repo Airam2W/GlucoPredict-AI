@@ -2,9 +2,19 @@
 import { addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { MAX_PACIENTES } from "./reestrinccionesLicencia.js";
+import {
+    attachValidation,
+    validateBloodType,
+    validateInteger,
+    validateOptionalEmail,
+    validateOptionalNumber,
+    validateOptionalPhone,
+    validateOptionalText,
+    validateRequiredSelect,
+    validateRequiredText
+} from "./formValidation.js";
 
 onAuthStateChanged(auth, async (user) => {
     const params = new URLSearchParams(window.location.search);
@@ -39,6 +49,43 @@ const clinicaId = params.get("clinica");
 
 const btnVolver = document.getElementById("btnVolver");
 const formPaciente = document.getElementById("formPaciente");
+const validator = attachValidation(formPaciente, {
+    nombrePaciente: {
+        validate: (value) => validateRequiredText(value, "nombre completo", { min: 3, max: 80 })
+    },
+    edadPaciente: {
+        validate: (value) => validateInteger(value, "edad", 0, 120)
+    },
+    sexoPaciente: {
+        validate: (value) => validateRequiredSelect(value, "sexo")
+    },
+    pesoPaciente: {
+        validate: (value) => validateOptionalNumber(value, "peso", 1, 400)
+    },
+    alturaPaciente: {
+        validate: (value) => validateOptionalNumber(value, "altura", 30, 250)
+    },
+    telefonoPaciente: {
+        validate: (value) => validateOptionalPhone(value, "telefono")
+    },
+    correoPaciente: {
+        validate: (value) => validateOptionalEmail(value, "correo electronico")
+    },
+    contactoEmergenciaPaciente: {
+        validate: (value) => validateOptionalText(value, "contacto de emergencia", { min: 3, max: 80 })
+    },
+    tipoSangrePaciente: {
+        validate: (value) => validateBloodType(value)
+    },
+    observacionesPaciente: {
+        validate: (value) => validateOptionalText(value, "observaciones", {
+            min: 3,
+            max: 300,
+            pattern: /^[A-Za-z\u00C0-\u017F0-9.,;:/#()\- ]+$/,
+            patternMessage: "Observaciones contiene caracteres no permitidos."
+        })
+    }
+});
 
 if (!clinicaId) {
     alert("Clinica no encontrada");
@@ -51,6 +98,10 @@ btnVolver.onclick = () => {
 
 formPaciente.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (!validator.validateAll()) {
+        return;
+    }
 
     const user = auth.currentUser;
     const nombre = document.getElementById("nombrePaciente").value.trim();

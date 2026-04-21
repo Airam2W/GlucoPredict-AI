@@ -1,11 +1,16 @@
 ﻿import { auth, db } from "./configurationFirebase.js";
 import { addDoc, collection } from
 "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
 import { MAX_CLINICAS } from "./reestrinccionesLicencia.js";
+import {
+    attachValidation,
+    validateOptionalEmail,
+    validateOptionalPhone,
+    validateOptionalText,
+    validateRequiredText
+} from "./formValidation.js";
 
 
 onAuthStateChanged(auth, async (user) => {
@@ -26,9 +31,44 @@ onAuthStateChanged(auth, async (user) => {
 
 
 const form = document.getElementById("formClinica");
+const validator = attachValidation(form, {
+    nombreClinica: {
+        validate: (value) => validateRequiredText(value, "nombre de la clinica", { min: 3, max: 100 })
+    },
+    direccionClinica: {
+        validate: (value) => validateRequiredText(value, "direccion", {
+            min: 5,
+            max: 150,
+            pattern: /^[A-Za-z\u00C0-\u017F0-9.,/#()\- ]+$/
+        })
+    },
+    telefonoClinica: {
+        validate: (value) => validateOptionalPhone(value, "telefono de contacto")
+    },
+    correoClinica: {
+        validate: (value) => validateOptionalEmail(value, "correo de contacto")
+    },
+    responsableClinica: {
+        validate: (value) => validateOptionalText(value, "responsable medico", { min: 3, max: 80 })
+    },
+    especialidadClinica: {
+        validate: (value) => validateOptionalText(value, "especialidad principal", { min: 3, max: 80 })
+    },
+    horarioClinica: {
+        validate: (value) => validateOptionalText(value, "horario de atencion", {
+            min: 3,
+            max: 80,
+            pattern: /^[A-Za-z\u00C0-\u017F0-9:,\- ]+$/
+        })
+    }
+});
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (!validator.validateAll()) {
+        return;
+    }
 
     const user = auth.currentUser;
 

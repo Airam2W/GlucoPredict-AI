@@ -1,10 +1,18 @@
 ﻿import { auth, db } from "./configurationFirebase.js";
 import { addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { MAX_PERFILES } from "./reestrinccionesLicencia.js";
+import {
+    attachValidation,
+    validateInteger,
+    validateOptionalEmail,
+    validateOptionalNumber,
+    validateOptionalPhone,
+    validateOptionalText,
+    validateRequiredSelect,
+    validateRequiredText
+} from "./formValidation.js";
 
 onAuthStateChanged(auth, async (user) => {
     const ref = collection(db, "users", user.uid, "perfiles");
@@ -35,9 +43,44 @@ function calcularIMC(peso, alturaCm) {
 }
 
 const formPerfil = document.getElementById("formPerfil");
+const validator = attachValidation(formPerfil, {
+    nombrePerfil: {
+        validate: (value) => validateRequiredText(value, "nombre completo", { min: 3, max: 80 })
+    },
+    edadPerfil: {
+        validate: (value) => validateInteger(value, "edad", 0, 120)
+    },
+    sexoPerfil: {
+        validate: (value) => validateRequiredSelect(value, "sexo")
+    },
+    pesoPerfil: {
+        validate: (value) => validateOptionalNumber(value, "peso", 1, 400)
+    },
+    alturaPerfil: {
+        validate: (value) => validateOptionalNumber(value, "altura", 30, 250)
+    },
+    telefonoPerfil: {
+        validate: (value) => validateOptionalPhone(value, "telefono")
+    },
+    correoPerfil: {
+        validate: (value) => validateOptionalEmail(value, "correo electronico")
+    },
+    observacionesPerfil: {
+        validate: (value) => validateOptionalText(value, "observaciones", {
+            min: 3,
+            max: 300,
+            pattern: /^[A-Za-z\u00C0-\u017F0-9.,;:/#()\- ]+$/,
+            patternMessage: "Observaciones contiene caracteres no permitidos."
+        })
+    }
+});
 
 formPerfil.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (!validator.validateAll()) {
+        return;
+    }
 
     const user = auth.currentUser;
     const nombre = document.getElementById("nombrePerfil").value.trim();

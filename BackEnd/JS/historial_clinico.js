@@ -1,6 +1,14 @@
-﻿import { auth, db } from "./configurationFirebase.js";
+import { auth, db } from "./configurationFirebase.js";
 import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+    attachValidation,
+    setFormFeedback,
+    validateInteger,
+    validateRequiredNumber,
+    validateRequiredSelect,
+    validateRequiredText
+} from "./formValidation.js";
 
 const params = new URLSearchParams(window.location.search);
 const tipo = params.get("tipo");
@@ -21,6 +29,32 @@ const saveStatus = document.getElementById("saveStatus");
 const pdfStatus = document.getElementById("pdfStatus");
 const historialForm = document.getElementById("historialForm");
 const btnVolver = document.getElementById("btnVolver");
+const validator = attachValidation(historialForm, {
+    name: {
+        validate: (value) => validateRequiredText(value, "nombre completo", { min: 3, max: 80 })
+    },
+    age: {
+        validate: (value) => validateInteger(value, "edad", 0, 120)
+    },
+    sex: {
+        validate: (value) => validateRequiredSelect(value, "sexo")
+    },
+    activity: {
+        validate: (value) => validateRequiredSelect(value, "actividad fisica")
+    },
+    alcohol: {
+        validate: (value) => validateRequiredSelect(value, "consumo de alcohol")
+    },
+    bmi: {
+        validate: (value) => validateRequiredNumber(value, "IMC", 10, 80)
+    },
+    glucose: {
+        validate: (value) => validateRequiredNumber(value, "glucosa en ayunas", 40, 600)
+    },
+    bp: {
+        validate: (value) => validateRequiredNumber(value, "presion arterial sistolica", 70, 250)
+    }
+});
 
 let personaCache = null;
 
@@ -89,10 +123,9 @@ function normalizarAlcohol(valor) {
     const texto = String(valor || "").trim().toLowerCase();
     if (["no", "nunca"].includes(texto)) return "No";
     if (["ocasional", "social"].includes(texto)) return "Ocasional";
-    if (["frecuente", "sí", "si"].includes(texto)) return "Frecuente";
+    if (["frecuente", "si", "s\u00ed"].includes(texto)) return "Frecuente";
     return "";
 }
-
 
 function calcularIMC(peso, alturaCm) {
     const pesoNum = Number(peso);
@@ -189,7 +222,6 @@ function extraerNumero(texto, regex, grupo = 1) {
     return Number.parseFloat(valor);
 }
 
-
 async function leerPDF(file) {
     const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
     let texto = "";
@@ -205,26 +237,25 @@ async function leerPDF(file) {
 
 function extraerDatos(texto) {
     const sexoRaw = extraerTexto(texto, /Sexo[:\s]*(Masculino|Femenino|M|F|Otro)/i);
-    const presionMatch = texto.match(/(TA|PA|Presi[oó]n arterial|Tensi[oó]n arterial)[:\s]*(\d{2,3})[\/\-](\d{2,3})/i);
+    const presionMatch = texto.match(/(TA|PA|Presi[o\u00F3]n arterial|Tensi[o\u00F3]n arterial)[:\s]*(\d{2,3})[\/\-](\d{2,3})/i);
 
     return {
         nombre: extraerTexto(
             texto,
-            /(Nombre del paciente|Nombre|Paciente)[:\s]*([A-Za-zÁÉÍÓÚÑ\s]+)/i,
+            /(Nombre del paciente|Nombre|Paciente)[:\s]*([A-Za-z\u00C0-\u017F\s]+)/i,
             2
         ),
         edad: extraerNumero(texto, /Edad[:\s]*(\d{1,3})/i),
         sexo: normalizarSexo(sexoRaw),
-        imc: extraerNumero(texto, /(IMC|Indice de masa corporal|Índice de masa corporal)[:\s]*([\d.,]+)/i, 2),
+        imc: extraerNumero(texto, /(IMC|Indice de masa corporal|\u00CDndice de masa corporal)[:\s]*([\d.,]+)/i, 2),
         glucosa: extraerNumero(texto, /Glucosa(?: en ayuno)?[:\s]*(\d{2,3})/i),
         presion_sistolica: presionMatch ? Number(presionMatch[2]) : "",
         antecedentes_familiares_diabetes: /(antecedentes.*diabetes|familia.*diabetes)/i.test(texto),
-        hipertension: /hipertensi[oó]n/i.test(texto),
-        actividad_fisica: extraerTexto(texto, /Actividad f[ií]sica[:\s]*(Sedentario|Moderado|Activo|Alta|Baja)/i),
-        alcohol: extraerTexto(texto, /Alcohol[:\s]*(No|Ocasional|Frecuente|Nunca|Sí)/i)
+        hipertension: /hipertensi[o\u00F3]n/i.test(texto),
+        actividad_fisica: extraerTexto(texto, /Actividad f[i\u00ED]sica[:\s]*(Sedentario|Moderado|Activo|Alta|Baja)/i),
+        alcohol: extraerTexto(texto, /Alcohol[:\s]*(No|Ocasional|Frecuente|Nunca|S\u00ED)/i)
     };
 }
-
 
 async function procesarPDF(e) {
     const file = e.target.files[0];
@@ -237,6 +268,7 @@ async function procesarPDF(e) {
     try {
         const texto = await leerPDF(file);
         actualizarInputs(extraerDatos(texto));
+        validator.validateAll();
         pdfStatus.innerText = "Datos extraidos del PDF. Revisa la informacion antes de guardar.";
     } catch (error) {
         console.error("Error al procesar PDF:", error);
@@ -255,11 +287,16 @@ onAuthStateChanged(auth, async (user) => {
     const historialSnap = await getDoc(getHistorialRef(user));
     if (historialSnap.exists()) {
         actualizarInputs(historialSnap.data());
+        validator.validateAll();
     }
 });
 
 historialForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (!validator.validateAll()) {
+        return;
+    }
 
     const user = auth.currentUser;
     const imcCalculado = bmiInput.value || !personaCache
@@ -283,8 +320,9 @@ historialForm.addEventListener("submit", async (e) => {
     await setDoc(getHistorialRef(user), data);
     await actualizarPersona(user, data);
 
+    setFormFeedback(historialForm, "", "success");
     saveStatus.innerText = "Historial clinico guardado correctamente.";
-    // Presionar btnVolver
+
     setTimeout(() => {
         btnVolver.click();
     }, 500);

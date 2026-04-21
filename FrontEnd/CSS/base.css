@@ -91,6 +91,36 @@ input:focus, select:focus, textarea:focus{
   box-shadow: var(--ring);
 }
 
+input.is-invalid,
+select.is-invalid,
+textarea.is-invalid{
+  border-color: var(--danger);
+  box-shadow: 0 0 0 4px rgba(217, 83, 79, .16);
+}
+
+.field-error{
+  margin-top: -4px;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: var(--danger);
+  min-height: 1.1em;
+}
+
+.form-feedback{
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  min-height: 1.2em;
+}
+
+.form-feedback.is-error{
+  color: var(--danger);
+}
+
+.form-feedback.is-success{
+  color: var(--accent);
+}
+
 ul{
   list-style: none;
   padding: 0;
