@@ -17,6 +17,7 @@ const especialidadClinica = document.getElementById("especialidadClinica");
 const horarioClinica = document.getElementById("horarioClinica");
 const listaPacientes = document.getElementById("listaPacientes");
 const btnAgregarPaciente = document.getElementById("btnAgregarPaciente");
+const btnEditarClinica = document.getElementById("btnEditarClinica");
 const btnEliminarClinica = document.getElementById("btnEliminarClinica");
 
 
@@ -137,4 +138,8 @@ onAuthStateChanged(auth, async (user) => {
 
 btnAgregarPaciente.onclick = () => {
     window.location.href = `agregar_paciente.html?clinica=${clinicaId}`;
+};
+
+btnEditarClinica.onclick = () => {
+    window.location.href = `agregar_clinica.html?id=${clinicaId}`;
 };

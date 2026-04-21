@@ -36,6 +36,7 @@ const explicacionesEl = document.getElementById("explicacionesPrediccion");
 const recomendacionesEl = document.getElementById("recomendacionesPrediccion");
 const btnHistorial = document.getElementById("btnHistorial");
 const btnSimular = document.getElementById("btnSimular");
+const btnEditarPerfil = document.getElementById("btnEditarPerfil");
 const btnVolver = document.getElementById("btnVolver");
 const btnEliminarPerfil = document.getElementById("btnEliminarPerfil");
 const fechaPrediccionEl = document.getElementById("fechaPrediccion");
@@ -417,4 +418,8 @@ btnSimular.onclick = () => {
 
 btnVolver.onclick = () => {
     window.location.href = "persona_dashboard.html";
+};
+
+btnEditarPerfil.onclick = () => {
+    window.location.href = `agregar_perfil.html?id=${perfilId}`;
 };

@@ -38,6 +38,7 @@ const recomendacionesEl = document.getElementById("recomendacionesPrediccion");
 const btnHistorial = document.getElementById("btnHistorial");
 const btnVolver = document.getElementById("btnVolver");
 const btnSimular = document.getElementById("btnSimular");
+const btnEditarPaciente = document.getElementById("btnEditarPaciente");
 const btnEliminarPaciente = document.getElementById("btnEliminarPaciente");
 const fechaPrediccionEl = document.getElementById("fechaPrediccion");
 
@@ -431,4 +432,8 @@ btnVolver.onclick = () => {
 
 btnSimular.onclick = () => {
     window.location.href = `simulador.html?tipo=paciente&id=${pacienteId}&clinica=${clinicaId}`;
+};
+
+btnEditarPaciente.onclick = () => {
+    window.location.href = `agregar_paciente.html?clinica=${clinicaId}&id=${pacienteId}`;
 };

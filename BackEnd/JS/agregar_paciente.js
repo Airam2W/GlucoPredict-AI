@@ -1,8 +1,13 @@
-﻿import { auth, db } from "./configurationFirebase.js";
-import { addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+import { auth, db } from "./configurationFirebase.js";
+import {
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    setDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { MAX_PACIENTES } from "./reestrinccionesLicencia.js";
 import {
     attachValidation,
@@ -15,22 +20,6 @@ import {
     validateRequiredSelect,
     validateRequiredText
 } from "./formValidation.js";
-
-onAuthStateChanged(auth, async (user) => {
-    const params = new URLSearchParams(window.location.search);
-    const clinicaId = params.get("clinica");
-    const ref = collection(db, "users", user.uid, "clinicas", clinicaId, "pacientes");
-    const snapshot = await getDocs(ref);
-    const numeroPacientes = snapshot.size;
-
-    console.log("Número de pacientes registrados:", numeroPacientes);
-    console.log("Límite máximo de pacientes:", MAX_PACIENTES);
-
-    if (numeroPacientes >= MAX_PACIENTES) {
-        alert(`Has alcanzado el límite de ${MAX_PACIENTES} pacientes. No puedes agregar más.`);
-        window.location.href = `clinica.html?id=${clinicaId}`;
-    }
-});
 
 function calcularIMC(peso, alturaCm) {
     const pesoNum = Number(peso);
@@ -46,9 +35,13 @@ function calcularIMC(peso, alturaCm) {
 
 const params = new URLSearchParams(window.location.search);
 const clinicaId = params.get("clinica");
+const pacienteId = params.get("id");
+const isEditMode = Boolean(pacienteId);
 
 const btnVolver = document.getElementById("btnVolver");
 const formPaciente = document.getElementById("formPaciente");
+const titulo = document.getElementById("tituloPaciente");
+const btnGuardar = document.getElementById("btnGuardarPaciente");
 const validator = attachValidation(formPaciente, {
     nombrePaciente: {
         validate: (value) => validateRequiredText(value, "nombre completo", { min: 3, max: 80 })
@@ -92,9 +85,61 @@ if (!clinicaId) {
     window.location.href = "medico_dashboard.html";
 }
 
+function actualizarTextosModo() {
+    if (!isEditMode) {
+        return;
+    }
+
+    titulo.textContent = "Editar paciente";
+    btnGuardar.textContent = "Guardar cambios";
+}
+
+function cargarFormulario(paciente) {
+    document.getElementById("nombrePaciente").value = paciente.nombre || "";
+    document.getElementById("edadPaciente").value = paciente.edad ?? "";
+    document.getElementById("sexoPaciente").value = paciente.sexo || "";
+    document.getElementById("pesoPaciente").value = paciente.peso ?? "";
+    document.getElementById("alturaPaciente").value = paciente.altura ?? "";
+    document.getElementById("telefonoPaciente").value = paciente.telefono || "";
+    document.getElementById("correoPaciente").value = paciente.correo || "";
+    document.getElementById("contactoEmergenciaPaciente").value = paciente.contactoEmergencia || "";
+    document.getElementById("tipoSangrePaciente").value = paciente.tipoSangre || "";
+    document.getElementById("observacionesPaciente").value = paciente.observaciones || "";
+}
+
 btnVolver.onclick = () => {
     window.location.href = `clinica.html?id=${clinicaId}`;
 };
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        return;
+    }
+
+    actualizarTextosModo();
+
+    if (!isEditMode) {
+        const ref = collection(db, "users", user.uid, "clinicas", clinicaId, "pacientes");
+        const snapshot = await getDocs(ref);
+
+        if (snapshot.size >= MAX_PACIENTES) {
+            alert(`Has alcanzado el límite de ${MAX_PACIENTES} pacientes. No puedes agregar más.`);
+            window.location.href = `clinica.html?id=${clinicaId}`;
+        }
+        return;
+    }
+
+    const pacienteRef = doc(db, "users", user.uid, "clinicas", clinicaId, "pacientes", pacienteId);
+    const pacienteSnap = await getDoc(pacienteRef);
+
+    if (!pacienteSnap.exists()) {
+        alert("Paciente no encontrado");
+        window.location.href = `clinica.html?id=${clinicaId}`;
+        return;
+    }
+
+    cargarFormulario(pacienteSnap.data());
+});
 
 formPaciente.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -117,20 +162,35 @@ formPaciente.addEventListener("submit", async (e) => {
     const pesoNumero = peso ? Number(peso) : null;
     const alturaNumero = altura ? Number(altura) : null;
 
+    const data = {
+        nombre,
+        edad,
+        sexo,
+        peso: pesoNumero,
+        altura: alturaNumero,
+        imc: calcularIMC(pesoNumero, alturaNumero),
+        telefono,
+        correo,
+        contactoEmergencia,
+        tipoSangre,
+        observaciones,
+        updatedAt: new Date()
+    };
+
+    if (isEditMode) {
+        await setDoc(
+            doc(db, "users", user.uid, "clinicas", clinicaId, "pacientes", pacienteId),
+            data,
+            { merge: true }
+        );
+        window.location.href = `paciente.html?id=${pacienteId}&clinica=${clinicaId}`;
+        return;
+    }
+
     await addDoc(
         collection(db, "users", user.uid, "clinicas", clinicaId, "pacientes"),
         {
-            nombre,
-            edad,
-            sexo,
-            peso: pesoNumero,
-            altura: alturaNumero,
-            imc: calcularIMC(pesoNumero, alturaNumero),
-            telefono,
-            correo,
-            contactoEmergencia,
-            tipoSangre,
-            observaciones,
+            ...data,
             createdAt: new Date()
         }
     );

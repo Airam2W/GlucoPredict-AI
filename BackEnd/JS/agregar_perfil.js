@@ -1,6 +1,12 @@
-﻿import { auth, db } from "./configurationFirebase.js";
-import { addDoc, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { auth, db } from "./configurationFirebase.js";
+import {
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    setDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { MAX_PERFILES } from "./reestrinccionesLicencia.js";
 import {
@@ -14,22 +20,6 @@ import {
     validateRequiredText
 } from "./formValidation.js";
 
-onAuthStateChanged(auth, async (user) => {
-    const ref = collection(db, "users", user.uid, "perfiles");
-    const snapshot = await getDocs(ref);
-
-    const numeroPerfiles = snapshot.size;
-
-    console.log("Número de perfiles registrados:", numeroPerfiles);
-    console.log("Límite máximo de perfiles:", MAX_PERFILES);
-
-    if (numeroPerfiles >= MAX_PERFILES) {
-        alert(`Has alcanzado el límite de ${MAX_PERFILES} perfiles. No puedes agregar más.`);
-        window.location.href = "persona_dashboard.html";
-    }
-});
-
-
 function calcularIMC(peso, alturaCm) {
     const pesoNum = Number(peso);
     const alturaNum = Number(alturaCm);
@@ -42,7 +32,13 @@ function calcularIMC(peso, alturaCm) {
     return Number((pesoNum / (alturaMetros * alturaMetros)).toFixed(1));
 }
 
+const params = new URLSearchParams(window.location.search);
+const perfilId = params.get("id");
+const isEditMode = Boolean(perfilId);
+
 const formPerfil = document.getElementById("formPerfil");
+const titulo = document.getElementById("tituloPerfil");
+const btnGuardar = document.getElementById("btnGuardarPerfil");
 const validator = attachValidation(formPerfil, {
     nombrePerfil: {
         validate: (value) => validateRequiredText(value, "nombre completo", { min: 3, max: 80 })
@@ -75,6 +71,58 @@ const validator = attachValidation(formPerfil, {
     }
 });
 
+function actualizarTextosModo() {
+    if (!isEditMode) {
+        return;
+    }
+
+    titulo.textContent = "Editar perfil personal";
+    btnGuardar.textContent = "Guardar cambios";
+}
+
+function cargarFormulario(perfil) {
+    document.getElementById("nombrePerfil").value = perfil.nombre || "";
+    document.getElementById("edadPerfil").value = perfil.edad ?? "";
+    document.getElementById("sexoPerfil").value = perfil.sexo || "";
+    document.getElementById("pesoPerfil").value = perfil.peso ?? "";
+    document.getElementById("alturaPerfil").value = perfil.altura ?? "";
+    document.getElementById("telefonoPerfil").value = perfil.telefono || "";
+    document.getElementById("correoPerfil").value = perfil.correo || "";
+    document.getElementById("antecedentesDiabetesPerfil").value = perfil.antecedentesDiabetes || "";
+    document.getElementById("actividadFisicaPerfil").value = perfil.actividadFisica || "";
+    document.getElementById("observacionesPerfil").value = perfil.observaciones || "";
+}
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        return;
+    }
+
+    actualizarTextosModo();
+
+    if (!isEditMode) {
+        const ref = collection(db, "users", user.uid, "perfiles");
+        const snapshot = await getDocs(ref);
+
+        if (snapshot.size >= MAX_PERFILES) {
+            alert(`Has alcanzado el límite de ${MAX_PERFILES} perfiles. No puedes agregar más.`);
+            window.location.href = "persona_dashboard.html";
+        }
+        return;
+    }
+
+    const perfilRef = doc(db, "users", user.uid, "perfiles", perfilId);
+    const perfilSnap = await getDoc(perfilRef);
+
+    if (!perfilSnap.exists()) {
+        alert("Perfil no encontrado");
+        window.location.href = "persona_dashboard.html";
+        return;
+    }
+
+    cargarFormulario(perfilSnap.data());
+});
+
 formPerfil.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -96,7 +144,7 @@ formPerfil.addEventListener("submit", async (e) => {
     const pesoNumero = peso ? Number(peso) : null;
     const alturaNumero = altura ? Number(altura) : null;
 
-    await addDoc(collection(db, "users", user.uid, "perfiles"), {
+    const data = {
         nombre,
         edad,
         sexo,
@@ -108,6 +156,17 @@ formPerfil.addEventListener("submit", async (e) => {
         antecedentesDiabetes,
         actividadFisica,
         observaciones,
+        updatedAt: new Date()
+    };
+
+    if (isEditMode) {
+        await setDoc(doc(db, "users", user.uid, "perfiles", perfilId), data, { merge: true });
+        window.location.href = `perfil_persona.html?id=${perfilId}`;
+        return;
+    }
+
+    await addDoc(collection(db, "users", user.uid, "perfiles"), {
+        ...data,
         createdAt: new Date()
     });
 

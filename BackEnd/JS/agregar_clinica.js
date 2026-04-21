@@ -1,7 +1,12 @@
-﻿import { auth, db } from "./configurationFirebase.js";
-import { addDoc, collection } from
-"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { auth, db } from "./configurationFirebase.js";
+import {
+    addDoc,
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    setDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { MAX_CLINICAS } from "./reestrinccionesLicencia.js";
 import {
@@ -12,25 +17,13 @@ import {
     validateRequiredText
 } from "./formValidation.js";
 
-
-onAuthStateChanged(auth, async (user) => {
-    const ref = collection(db, "users", user.uid, "clinicas");
-    const snapshot = await getDocs(ref);
-
-    const numeroClinicas = snapshot.size;
-
-    console.log("Número de clínicas registradas:", numeroClinicas);
-    console.log("Límite máximo de clínicas:", MAX_CLINICAS);
-
-    if (numeroClinicas >= MAX_CLINICAS) {
-        alert(`Has alcanzado el límite de ${MAX_CLINICAS} clínicas. No puedes agregar más.`);
-        window.location.href = "medico_dashboard.html";
-    }
-
-});
-
+const params = new URLSearchParams(window.location.search);
+const clinicaId = params.get("id");
+const isEditMode = Boolean(clinicaId);
 
 const form = document.getElementById("formClinica");
+const titulo = document.getElementById("tituloClinica");
+const btnGuardar = document.getElementById("btnGuardarClinica");
 const validator = attachValidation(form, {
     nombreClinica: {
         validate: (value) => validateRequiredText(value, "nombre de la clinica", { min: 3, max: 100 })
@@ -63,6 +56,55 @@ const validator = attachValidation(form, {
     }
 });
 
+function actualizarTextosModo() {
+    if (!isEditMode) {
+        return;
+    }
+
+    titulo.textContent = "Editar clinica";
+    btnGuardar.textContent = "Guardar cambios";
+}
+
+function cargarFormulario(clinica) {
+    document.getElementById("nombreClinica").value = clinica.nombre || "";
+    document.getElementById("direccionClinica").value = clinica.direccion || "";
+    document.getElementById("telefonoClinica").value = clinica.telefono || "";
+    document.getElementById("correoClinica").value = clinica.correo || "";
+    document.getElementById("responsableClinica").value = clinica.responsable || "";
+    document.getElementById("especialidadClinica").value = clinica.especialidad || "";
+    document.getElementById("horarioClinica").value = clinica.horario || "";
+}
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        return;
+    }
+
+    actualizarTextosModo();
+
+    if (!isEditMode) {
+        const ref = collection(db, "users", user.uid, "clinicas");
+        const snapshot = await getDocs(ref);
+
+        if (snapshot.size >= MAX_CLINICAS) {
+            alert(`Has alcanzado el límite de ${MAX_CLINICAS} clínicas. No puedes agregar más.`);
+            window.location.href = "medico_dashboard.html";
+        }
+        return;
+    }
+
+    const clinicaRef = doc(db, "users", user.uid, "clinicas", clinicaId);
+    const clinicaSnap = await getDoc(clinicaRef);
+
+    if (!clinicaSnap.exists()) {
+        alert("Clinica no encontrada");
+        window.location.href = "medico_dashboard.html";
+        return;
+    }
+
+    cargarFormulario(clinicaSnap.data());
+});
+
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -71,7 +113,6 @@ form.addEventListener("submit", async (e) => {
     }
 
     const user = auth.currentUser;
-
     const nombre = document.getElementById("nombreClinica").value.trim();
     const direccion = document.getElementById("direccionClinica").value.trim();
     const telefono = document.getElementById("telefonoClinica").value.trim();
@@ -80,7 +121,7 @@ form.addEventListener("submit", async (e) => {
     const especialidad = document.getElementById("especialidadClinica").value.trim();
     const horario = document.getElementById("horarioClinica").value.trim();
 
-    await addDoc(collection(db, "users", user.uid, "clinicas"), {
+    const data = {
         nombre,
         direccion,
         telefono,
@@ -88,6 +129,17 @@ form.addEventListener("submit", async (e) => {
         responsable,
         especialidad,
         horario,
+        updatedAt: new Date()
+    };
+
+    if (isEditMode) {
+        await setDoc(doc(db, "users", user.uid, "clinicas", clinicaId), data, { merge: true });
+        window.location.href = `clinica.html?id=${clinicaId}`;
+        return;
+    }
+
+    await addDoc(collection(db, "users", user.uid, "clinicas"), {
+        ...data,
         createdAt: new Date()
     });
 
