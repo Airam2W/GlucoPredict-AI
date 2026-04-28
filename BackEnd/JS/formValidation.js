@@ -216,6 +216,11 @@ export function validateOptionalPhone(value, label = "telefono") {
         return "";
     }
 
+    const allowedPhonePattern = /^\+?[\d\s\-()]+$/;
+    if (!allowedPhonePattern.test(trimmed)) {
+        return `El ${label} solo puede contener numeros, espacios, parentesis, guiones y el signo +.`;
+    }
+
     const digits = trimmed.replace(/\D/g, "");
     if (digits.length < 10 || digits.length > 15) {
         return `El ${label} debe tener entre 10 y 15 digitos.`;
