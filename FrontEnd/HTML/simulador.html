@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Simulador de Riesgo</title>
-
+    <link rel="icon" type="image/png" href="/GlucoPredict-AI/FrontEnd/img/logosolo.png">
     <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/base.css">
     <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/simulador.css">
 </head>
@@ -12,15 +12,13 @@
 
 <div class="container">
 
-    <h2>Simulador de evolución del riesgo</h2>
+    <h2>Simulador de evolucion del riesgo</h2>
 
-    <!-- INFO PACIENTE -->
     <div class="card">
         <p><strong>Nombre:</strong> <span id="nombre">-</span></p>
         <p><strong>Riesgo actual:</strong> <span id="riesgoActual">-</span>%</p>
     </div>
 
-    <!-- Historial de predicciones -->
     <div class="card">
         <h4>Historial de predicciones:</h4>
         <div id="historialPredicciones" style="
@@ -31,9 +29,8 @@
         "></div>
     </div>
 
-    <!-- CONTROLES -->
     <div class="card">
-        <h3>Configuración</h3>
+        <h3>Configuracion</h3>
 
         <label>Tiempo:</label>
         <select id="tiempo">
@@ -49,35 +46,30 @@
         </div>
 
         <button id="btnSimular">Simular</button>
-        <button id="btnVaciarGrafica">Vaciar gráfica</button>
+        <button id="btnVaciarGrafica">Vaciar grafica</button>
     </div>
 
-    <!-- Graficas -->
     <div class="card" id="graficasEl">
         <h3>Resultados:</h3>
 
         <h4>Riesgo</h4>
-        <!-- Grafica de riesgo -->
         <canvas id="graficaRiesgo"></canvas>
         <p id="interpretacionRiesgo"></p>
         <p id="riesgoFinal"></p>
 
-        
-        <!-- Grafica de IMC-->
         <br>
-        <h4>Índice de Masa Corporal (IMC)</h4>
+        <h4>Indice de Masa Corporal (IMC)</h4>
         <canvas id="graficaIMC"></canvas>
         <p id="interpretacionIMC"></p>
         <p id="imcFinal"></p>
 
-        <!-- Grafica de glucosa -->
         <br>
         <h4>Glucosa en sangre</h4>
         <canvas id="graficaGlucosa"></canvas>
         <p id="interpretacionGlucosa"></p>
         <p id="glucosaFinal"></p>
 
-        <p id="mensajeFinal" style="font-style: italic;">Recuerda que estos resultados son estimaciones y pueden variar según tu situación individual.</p>
+        <p id="mensajeFinal" style="font-style: italic;">Recuerda que estos resultados son estimaciones y pueden variar segun tu situacion individual.</p>
     </div>
 
     <button id="btnVolver">Volver</button>
@@ -85,8 +77,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>  
-<script type="module" src="/GlucoPredict-AI/BackEnd/JS/licencia-guard.js"></script>  
+<script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>
+<script type="module" src="/GlucoPredict-AI/BackEnd/JS/licencia-guard.js"></script>
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/simulador.js"></script>
 
 
