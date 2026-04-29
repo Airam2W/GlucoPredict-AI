@@ -19,7 +19,47 @@
 
 <div class="explicacion-item">
     <strong>Simulador de recomendaciones:</strong>
-    Podras simular escenarios y obtener sugerencias personalizadas.
+    <br>
+    - Podras simular escenarios y obtener sugerencias personalizadas.
+    <br>
+    - Acceso a la creacion de clinicas, pacientes y perfiles ilimitados.
+</div>
+
+<!-- 🔥 MODAL DE PAGO -->
+<div id="modalPago" class="modal hidden">
+    <div class="modal-content">
+
+        <span class="close" id="cerrarModal">&times;</span>
+
+        <h3>💳 Pago con tarjeta</h3>
+
+        <div class="form-group">
+            <label>Número de tarjeta</label>
+            <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456">
+        </div>
+
+        <div class="form-group">
+            <label>Nombre del titular</label>
+            <input type="text" id="cardName" placeholder="Juan Pérez">
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label>Expiración</label>
+                <input type="text" id="cardExpiry" placeholder="MM/AA">
+            </div>
+
+            <div class="form-group">
+                <label>CVV</label>
+                <input type="text" id="cardCVV" placeholder="123">
+            </div>
+        </div>
+
+        <button id="btnConfirmarPago" class="btn-confirmar">
+            Confirmar pago
+        </button>
+
+    </div>
 </div>
 
 <div class="buttons">

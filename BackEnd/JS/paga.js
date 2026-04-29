@@ -8,6 +8,10 @@ const where = params.get("where");
 const btnPagar = document.getElementById("btnPagar");
 const btnCancelar = document.getElementById("btnCancelar");
 
+const modal = document.getElementById("modalPago");
+const cerrarModal = document.getElementById("cerrarModal");
+const btnConfirmarPago = document.getElementById("btnConfirmarPago");
+
 onAuthStateChanged(auth, (user) => {
     if (!user) {
         window.location.href = "../../index.html";
@@ -17,11 +21,21 @@ onAuthStateChanged(auth, (user) => {
 // -----------------------------
 // BOTÓN VOLVERSE DE PAGA
 // -----------------------------
-btnPagar.onclick = async () => {
+btnConfirmarPago.onclick = async () => {
+
     const user = auth.currentUser;
 
     if (!user) {
         alert("Sesión inválida");
+        return;
+    }
+
+    // 🔥 (opcional) validación fake básica
+    const cardNumber = document.getElementById("cardNumber").value;
+    const cvv = document.getElementById("cardCVV").value;
+
+    if (cardNumber.length < 12 || cvv.length < 3) {
+        alert("Datos de tarjeta inválidos");
         return;
     }
 
@@ -30,12 +44,29 @@ btnPagar.onclick = async () => {
             tipo: "PAGA"
         });
 
-        alert("Ahora eres usuario de PAGA 🎉");
+        alert("Pago exitoso 🎉");
+        modal.classList.add("hidden");
+
         redirigirWhere();
 
     } catch (error) {
         console.error(error);
         alert("Error al actualizar el plan");
+    }
+};
+
+btnPagar.onclick = () => {
+    modal.classList.remove("hidden");
+};
+
+cerrarModal.onclick = () => {
+    modal.classList.add("hidden");
+};
+
+// cerrar al hacer click fuera
+window.onclick = (e) => {
+    if (e.target === modal) {
+        modal.classList.add("hidden");
     }
 };
 
