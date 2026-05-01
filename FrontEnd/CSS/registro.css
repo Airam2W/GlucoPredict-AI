@@ -14,9 +14,24 @@ body.registro-page {
 .registro-card-static {
   position: relative;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   opacity: 1;
   transform: none;
+  background: var(--card);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  padding: 32px;
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.6s ease-out both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .registro-card-static h2 {

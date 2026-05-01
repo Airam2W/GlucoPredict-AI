@@ -1,4 +1,4 @@
-﻿import { auth, db } from "./configurationFirebase.js";
+import { auth, db } from "./configurationFirebase.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { calcularRiesgo, obtenerExplicacionesMedica, obtenerRecomendaciones } from "./prediccion.js";
@@ -271,6 +271,13 @@ onAuthStateChanged(auth, async (user) => {
                     ultimaPrediccion.recomendaciones,
                     ultimaPrediccion.fecha
                 );
+            }
+
+            // Mostrar skeleton loaders mientras carga
+            if (!ultimaPrediccion) {
+                riesgoEl.innerHTML = '<span class="skeleton-text"></span>';
+                explicacionesEl.innerHTML = '<p class="explicacion-item"><span class="spinner-loader"></span> Analizando datos clínicos y buscando patrones...</p>';
+                recomendacionesEl.innerHTML = '<p class="recomendacion-item"><span class="spinner-loader"></span> Generando plan de acción personalizado...</p>';
             }
 
             const nueva = await obtenerNuevaPrediccion(historial);
