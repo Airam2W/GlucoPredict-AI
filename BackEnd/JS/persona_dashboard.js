@@ -76,7 +76,7 @@ auth.onAuthStateChanged(async (user) => {
             
             if (window.user.tipo !== "PAGA") {
                 btnAgregarPerfil.title = "Solo disponible maximo 3 perfiles para usuarios no PAGA. Actualiza a PAGA para agregar más.";
-                btnAgregarPerfil.style.backgroundColor = "#ccc";
+                btnAgregarPerfil.style.backgroundColor = "var(--disabled-bg)";
                 btnAgregarPerfil.style.cursor = "not-allowed";
                 btnAgregarPerfil.onclick = () => {
                     const respuesta = confirm("Solo disponible maximo 3 perfiles para usuarios no PAGA. ¿Deseas ir a la página de pago?");

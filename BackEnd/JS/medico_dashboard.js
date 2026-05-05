@@ -75,7 +75,7 @@ onAuthStateChanged(auth, async (user) => {
             
             if (window.user.tipo !== "PAGA") {
                 btnAgregarClinica.title = "Solo disponible maximo 1 clínica para usuarios no PAGA. Actualiza a PAGA para agregar más.";
-                btnAgregarClinica.style.backgroundColor = "#ccc";
+                btnAgregarClinica.style.backgroundColor = "var(--disabled-bg)";
                 btnAgregarClinica.style.cursor = "not-allowed";
                 btnAgregarClinica.onclick = () => {
                     const respuesta = confirm("Solo disponible maximo 1 clínica para usuarios no PAGA. ¿Deseas ir a la página de pago?");

@@ -45,6 +45,54 @@ const fechaPrediccionEl = document.getElementById("fechaPrediccion");
 let riesgoChartInstance = null;
 let factoresChartInstance = null;
 
+function cssVar(name, fallback = "") {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return value || fallback;
+}
+
+function chartTextColor() {
+    return cssVar("--text", "#0f172a");
+}
+
+function chartGridColor() {
+    return cssVar("--border", "rgba(15, 23, 42, 0.12)");
+}
+
+function themedScaleOptions(extra = {}) {
+    return {
+        ...extra,
+        ticks: { ...(extra.ticks || {}), color: chartTextColor() },
+        grid: { ...(extra.grid || {}), color: chartGridColor() }
+    };
+}
+
+function applyChartTheme(chart) {
+    if (!chart) return;
+
+    chart.options.color = chartTextColor();
+
+    if (chart.options.plugins?.legend?.labels) {
+        chart.options.plugins.legend.labels.color = chartTextColor();
+    }
+
+    if (chart.options.scales) {
+        Object.keys(chart.options.scales).forEach((key) => {
+            chart.options.scales[key] = themedScaleOptions(chart.options.scales[key]);
+        });
+    }
+
+    if (chart.config.type === "doughnut" && Array.isArray(chart.data.datasets?.[0]?.backgroundColor)) {
+        chart.data.datasets[0].backgroundColor[1] = cssVar("--chart-empty", "#E0E0E0");
+    }
+
+    chart.update();
+}
+
+window.addEventListener("glucopredict-theme-change", () => {
+    applyChartTheme(riesgoChartInstance);
+    applyChartTheme(factoresChartInstance);
+});
+
 export async function obtenerNuevaPrediccion(historial) {
     try {
         const timeout = new Promise((_, reject) =>
@@ -87,12 +135,13 @@ function crearGraficaRiesgo(riesgo) {
                 data: [riesgo, 100 - riesgo],
                 backgroundColor: [
                     riesgo < 30 ? "#4CAF50" : riesgo < 60 ? "#FFC107" : "#F44336",
-                    "#E0E0E0"
+                    cssVar("--chart-empty", "#E0E0E0")
                 ],
                 borderWidth: 0
             }]
         },
         options: {
+            color: chartTextColor(),
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -156,10 +205,21 @@ function crearGraficaFactores(historial) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            color: chartTextColor(),
+            plugins: {
+                legend: {
+                    labels: {
+                        color: chartTextColor()
+                    }
+                }
+            },
             scales: {
+                x: themedScaleOptions(),
                 y: {
                     beginAtZero: true,
-                    max: 30
+                    max: 30,
+                    ticks: { color: chartTextColor() },
+                    grid: { color: chartGridColor() }
                 }
             }
         }
@@ -190,7 +250,7 @@ onAuthStateChanged(auth, async (user) => {
             
             if (window.user.tipo !== "PAGA") {
                 btnSimular.title = "Solo disponible para usuarios PAGA";
-                btnSimular.style.backgroundColor = "#ccc";
+                btnSimular.style.backgroundColor = "var(--disabled-bg)";
                 btnSimular.style.cursor = "not-allowed";
                 btnSimular.onclick = () => {
                     const respuesta = confirm("Simulador solo disponible para usuarios PAGA. ¿Deseas ir a la página de pago?");
@@ -345,7 +405,7 @@ onAuthStateChanged(auth, async (user) => {
                 riesgoEl.style.color = "#F44336";
             } else {
                 riesgoEl.innerText = "Desconocido";
-                riesgoEl.style.color = "#000";
+                riesgoEl.style.color = "var(--text)";
             }
 
             const explicaciones = await obtenerExplicacionesMedica(historial);

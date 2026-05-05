@@ -44,6 +44,63 @@ let chartGlucosa = null;
 
 let prediccionSeleccionada = null;
 
+function cssVar(name, fallback = "") {
+    const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    return value || fallback;
+}
+
+function chartTextColor() {
+    return cssVar("--text", "#0f172a");
+}
+
+function chartGridColor() {
+    return cssVar("--border", "rgba(15, 23, 42, 0.12)");
+}
+
+function chartLineOptions() {
+    return {
+        responsive: true,
+        color: chartTextColor(),
+        plugins: {
+            legend: {
+                labels: {
+                    color: chartTextColor()
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: { color: chartTextColor() },
+                grid: { color: chartGridColor() }
+            },
+            y: {
+                ticks: { color: chartTextColor() },
+                grid: { color: chartGridColor() }
+            }
+        }
+    };
+}
+
+function applyLineChartTheme(chart) {
+    if (!chart) return;
+
+    chart.options.color = chartTextColor();
+    chart.options.plugins = chart.options.plugins || {};
+    chart.options.plugins.legend = chart.options.plugins.legend || {};
+    chart.options.plugins.legend.labels = {
+        ...(chart.options.plugins.legend.labels || {}),
+        color: chartTextColor()
+    };
+    chart.options.scales = chartLineOptions().scales;
+    chart.update();
+}
+
+window.addEventListener("glucopredict-theme-change", () => {
+    applyLineChartTheme(chartRiesgo);
+    applyLineChartTheme(chartIMC);
+    applyLineChartTheme(chartGlucosa);
+});
+
 /* -----------------------------
    IMPACTOS
 ----------------------------- */
@@ -186,7 +243,7 @@ function renderHistorialPredicciones(lista) {
 
         const item = document.createElement("div");
         item.style.padding = "6px";
-        item.style.borderBottom = "1px solid #eee";
+        item.style.borderBottom = "1px solid var(--border)";
         item.style.cursor = "pointer";
 
         const fechaFormateada = pred.fecha?.toDate
@@ -239,7 +296,7 @@ function seleccionarPrediccion(pred, element) {
     Array.from(historialPrediccionesEl.children).forEach(el => {
         el.style.background = "";
     });
-    element.style.background = "#e3f2fd";
+    element.style.background = "var(--history-selected)";
 
     // 🔥 limpiar impacto anterior
     Object.keys(impacto).forEach(k => delete impacto[k]);
@@ -410,7 +467,8 @@ function crearLineaChart(ctx, data, label, color) {
                 borderColor: color,
                 tension: 0.3
             }]
-        }
+        },
+        options: chartLineOptions()
     });
 }
 

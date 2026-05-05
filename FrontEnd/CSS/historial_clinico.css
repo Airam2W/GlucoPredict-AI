@@ -116,11 +116,11 @@ button{
 
 /* botón secundario */
 button[type="button"]{
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--surface);
   backdrop-filter: var(--glass-blur);
   color: var(--primary);
   box-shadow: none;
-  border: 1.5px solid rgba(37, 99, 235, 0.3);
+  border: 1.5px solid var(--border);
   transition: all 0.2s ease;
 }
 

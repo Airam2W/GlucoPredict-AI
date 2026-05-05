@@ -103,7 +103,7 @@ onAuthStateChanged(auth, async (user) => {
 
     if (numeroPacientes >= MAX_PACIENTES) {
         btnAgregarPaciente.title = "Solo disponible maximo 3 pacientes para usuarios no PAGA. Actualiza a PAGA para agregar más.";
-        btnAgregarPaciente.style.backgroundColor = "#ccc";
+        btnAgregarPaciente.style.backgroundColor = "var(--disabled-bg)";
         btnAgregarPaciente.style.cursor = "not-allowed";
         btnAgregarPaciente.onclick = () => {
             const respuesta = confirm("Solo disponible maximo 3 pacientes para usuarios no PAGA. ¿Deseas ir a la página de pago?");
