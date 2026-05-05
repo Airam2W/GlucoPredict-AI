@@ -21,6 +21,10 @@ const sexInput = document.getElementById("sex");
 const bmiInput = document.getElementById("bmi");
 const glucoseInput = document.getElementById("glucose");
 const bpInput = document.getElementById("bp");
+const hba1cInput = document.getElementById("hba1c");
+const trigliceridosInput = document.getElementById("trigliceridos");
+const hdlInput = document.getElementById("hdl");
+const circunferencia_cinturaInput = document.getElementById("circunferencia_cintura");
 const familyInput = document.getElementById("family");
 const hypertensionInput = document.getElementById("hypertension");
 const activityInput = document.getElementById("activity");
@@ -53,6 +57,18 @@ const validator = attachValidation(historialForm, {
     },
     bp: {
         validate: (value) => validateRequiredNumber(value, "presion arterial sistolica", 70, 250)
+    },
+    hba1c: {
+        validate: (value) => validateRequiredNumber(value, "HbA1c", 3, 20)
+    },
+    trigliceridos: {
+        validate: (value) => validateRequiredNumber(value, "trigliceridos", 10, 1000)
+    },
+    hdl: {
+        validate: (value) => validateRequiredNumber(value, "HDL", 10, 150)
+    },
+    circunferencia_cintura: {
+        validate: (value) => validateRequiredNumber(value, "circunferencia de cintura", 30, 200)
     }
 });
 
@@ -170,6 +186,18 @@ function actualizarInputs(datos) {
     }
     if (datos.alcohol) {
         alcoholInput.value = normalizarAlcohol(datos.alcohol);
+    }
+    if (datos.hba1c !== undefined && datos.hba1c !== null && datos.hba1c !== "") {
+        hba1cInput.value = datos.hba1c;
+    }
+    if (datos.trigliceridos !== undefined && datos.trigliceridos !== null && datos.trigliceridos !== "") {
+        trigliceridosInput.value = datos.trigliceridos;
+    }
+    if (datos.hdl !== undefined && datos.hdl !== null && datos.hdl !== "") {
+        hdlInput.value = datos.hdl;
+    }
+    if (datos.circunferencia_cintura !== undefined && datos.circunferencia_cintura !== null && datos.circunferencia_cintura !== "") {
+        circunferencia_cinturaInput.value = datos.circunferencia_cintura;
     }
 }
 
@@ -309,11 +337,15 @@ historialForm.addEventListener("submit", async (e) => {
         sexo: sexInput.value,
         imc: imcCalculado || null,
         glucosa: Number(glucoseInput.value),
+        hba1c: Number(hba1cInput.value),
         presion_sistolica: Number(bpInput.value),
         antecedentes_familiares_diabetes: familyInput.checked,
         hipertension: hypertensionInput.checked,
         actividad_fisica: activityInput.value,
         alcohol: alcoholInput.value,
+        trigliceridos: Number(trigliceridosInput.value),
+        hdl: Number(hdlInput.value),
+        circunferencia_cintura: Number(circunferencia_cinturaInput.value),
         updatedAt: new Date()
     };
 

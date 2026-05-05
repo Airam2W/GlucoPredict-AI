@@ -54,3 +54,14 @@ export async function obtenerRecomendacionesImpacto(historial) {
     const data = await response.json();
     return data.historial.recomendaciones_con_impacto || [];
 }
+
+export async function obtenerMetricas(historial) {
+    const response = await fetch(`${API_URL}/api/predict`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(historial)
+    });
+
+    const data = await response.json();
+    return data.historial.metricas || {};
+}

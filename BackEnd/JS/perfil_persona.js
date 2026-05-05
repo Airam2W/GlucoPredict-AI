@@ -1,7 +1,7 @@
 import { auth, db } from "./configurationFirebase.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { calcularRiesgo, obtenerExplicacionesGeneral, obtenerRecomendaciones } from "./prediccion.js";
+import { calcularRiesgo, obtenerExplicacionesGeneral, obtenerMetricas, obtenerRecomendaciones } from "./prediccion.js";
 import { deletePerfilCompleto } from "./crud_helpers.js";
 import {
     collection,
@@ -104,8 +104,9 @@ async function obtenerNuevaPrediccion(historial) {
                 const riesgo = await calcularRiesgo(historial);
                 const explicaciones = await obtenerExplicacionesGeneral(historial);
                 const recomendaciones = await obtenerRecomendaciones(historial);
+                const metricas = await obtenerMetricas(historial);
 
-                return { riesgo, explicaciones, recomendaciones };
+                return { riesgo, explicaciones, recomendaciones, metricas };
             })(),
             timeout
         ]);
@@ -153,71 +154,91 @@ function crearGraficaRiesgo(riesgo) {
     });
 }
 
-function crearGraficaFactores(historial) {
+function crearGraficaFactores(metricas) {
     const ctx = document.getElementById("factoresChart");
 
     if (factoresChartInstance) {
         factoresChartInstance.destroy();
     }
 
-    const factores = {
-        Edad: historial.edad >= 45 ? 15 : 0,
-        IMC: historial.imc >= 30 ? 20 : historial.imc >= 25 ? 10 : 0,
-        Glucosa: historial.glucosa >= 126 ? 30 : historial.glucosa >= 100 ? 15 : 0,
-        Presion: historial.presion_sistolica >= 140 ? 10 : historial.presion_sistolica >= 120 ? 5 : 0,
-        Antecedentes: historial.antecedentes_familiares_diabetes ? 20 : 0,
-        Actividad: historial.actividad_fisica ? historial.actividad_fisica === "sedentario" ? 10 : 0 : 0
-    };
+    if (!metricas || !Array.isArray(metricas)) {
+        console.warn("Metricas invalidas:", metricas);
+        return;
+    }
 
-    const colores = Object.keys(factores).map((factor) => {
-        switch (factor) {
-            case "IMC":
-                if (historial.imc >= 30) return "red";
-                if (historial.imc >= 25) return "yellow";
-                return "green";
-            case "Glucosa":
-                if (historial.glucosa >= 126) return "red";
-                if (historial.glucosa >= 100) return "yellow";
-                return "green";
-            case "Presion":
-                if (historial.presion_sistolica >= 140) return "red";
-                if (historial.presion_sistolica >= 120) return "yellow";
-                return "green";
-            case "Actividad":
-                return historial.actividad_fisica === "sedentario" ? "red" : "green";
-            default:
-                return "#1976D2";
+    // 🔥 Convertir a impacto real (lo importante)
+    const procesadas = metricas.map(m => {
+        let impacto = 0;
+
+        // 🔴 NUMÉRICOS (glucosa, hba1c, etc)
+        if (typeof m.value === "number" && typeof m.threshold === "number") {
+            if (m.value >= m.threshold) impacto = 30;
+            else if (m.value >= m.threshold * 0.85) impacto = 15;
+            else impacto = 5;
         }
+
+        // 🧠 CATEGÓRICOS
+        if (typeof m.value === "string") {
+            if (m.value === "sedentario") impacto = 25;
+            else if (m.value === "activo") impacto = 5;
+        }
+
+        // 🧬 BINARIOS
+        if (m.value === 1 && m.threshold === 1) {
+            impacto = 20;
+        }
+
+        return {
+            label: m.factor.replace(/_/g, " ").toUpperCase(),
+            impacto
+        };
+    })
+    .filter(m => m.impacto > 0) // 🔥 limpiar ruido
+    .sort((a, b) => b.impacto - a.impacto); // 🔥 ordenar
+
+    const labels = procesadas.map(m => m.label);
+    const data = procesadas.map(m => m.impacto);
+
+    const colores = data.map(v => {
+        if (v >= 25) return "#F44336"; // rojo
+        if (v >= 15) return "#FFC107"; // amarillo
+        return "#4CAF50"; // verde
     });
 
     factoresChartInstance = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: Object.keys(factores),
+            labels,
             datasets: [{
-                label: "Impacto en el riesgo (%)",
-                data: Object.values(factores),
-                backgroundColor: colores
+                label: "Impacto en el riesgo",
+                data,
+                backgroundColor: colores,
+                borderRadius: 10,
+                barThickness: 26
             }]
         },
         options: {
+            indexAxis: "y", // 🔥 horizontal (MUY PRO)
             responsive: true,
             maintainAspectRatio: false,
-            color: chartTextColor(),
             plugins: {
-                legend: {
-                    labels: {
-                        color: chartTextColor()
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => `Impacto: ${ctx.raw}%`
                     }
                 }
             },
             scales: {
-                x: themedScaleOptions(),
-                y: {
+                x: {
                     beginAtZero: true,
-                    max: 30,
+                    max: 35,
                     ticks: { color: chartTextColor() },
                     grid: { color: chartGridColor() }
+                },
+                y: {
+                    ticks: { color: chartTextColor() },
+                    grid: { display: false }
                 }
             }
         }
@@ -319,8 +340,11 @@ onAuthStateChanged(auth, async (user) => {
                     ultimaPrediccion.riesgo,
                     ultimaPrediccion.explicaciones,
                     ultimaPrediccion.recomendaciones,
+                    ultimaPrediccion.metricas,
                     ultimaPrediccion.fecha
                 );
+
+                crearGraficaFactores(ultimaPrediccion.metricas);
             }
 
             // Mostrar skeleton loaders mientras carga
@@ -331,6 +355,8 @@ onAuthStateChanged(auth, async (user) => {
             }
 
             const nueva = await obtenerNuevaPrediccion(historial);
+
+            console.log("Predicción obtenida:", nueva);
 
             if (!nueva) {
                 // Si ya hay predicción previa, no hacer nada
@@ -347,8 +373,11 @@ onAuthStateChanged(auth, async (user) => {
                     nueva.riesgo,
                     nueva.explicaciones,
                     nueva.recomendaciones,
+                    nueva.metricas,
                     { seconds: Date.now() / 1000 }
                 );
+
+                crearGraficaFactores(nueva.metricas);
 
                 await addDoc(prediccionesRef, {
                     ...nueva,
@@ -369,8 +398,11 @@ onAuthStateChanged(auth, async (user) => {
                         nueva.riesgo,
                         nueva.explicaciones,
                         nueva.recomendaciones,
+                        nueva.metricas,
                         { seconds: Date.now() / 1000 }
                     );
+
+                    crearGraficaFactores(nueva.metricas);
 
                     await addDoc(prediccionesRef, {
                         ...nueva,
@@ -418,7 +450,7 @@ onAuthStateChanged(auth, async (user) => {
             });
 
             crearGraficaRiesgo(riesgo);
-            crearGraficaFactores(historial);
+            crearGraficaFactores(nueva.metricas);
         }
 
         btnEliminarPerfil.onclick = async () => {
