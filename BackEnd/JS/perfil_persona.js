@@ -469,7 +469,7 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 
-export function mostrarPrediccion(riesgo, explicaciones, recomendaciones, metricas, fecha) {
+export function mostrarPrediccion(riesgo, explicaciones, recomendaciones, fecha) {
     // Riesgo
     if (riesgo < 30) {
         riesgoEl.innerText = `${riesgo}% (Bajo)`;
@@ -484,26 +484,8 @@ export function mostrarPrediccion(riesgo, explicaciones, recomendaciones, metric
 
     // Fecha
     if (fecha) {
-
-        let fechaObj;
-
-        // 🔥 Timestamp Firestore
-        if (typeof fecha.toDate === "function") {
-            fechaObj = fecha.toDate();
-        }
-
-        // 🔥 Objeto con seconds
-        else if (fecha.seconds) {
-            fechaObj = new Date(fecha.seconds * 1000);
-        }
-
-        // 🔥 Date normal o string
-        else {
-            fechaObj = new Date(fecha);
-        }
-
-        fechaPrediccionEl.innerText =
-            "Última predicción: " + fechaObj.toLocaleString();
+        const fechaFormateada = new Date(fecha.seconds * 1000).toLocaleString();
+        fechaPrediccionEl.innerText = "Última predicción: " + fechaFormateada;
     }
 
     // Explicaciones
