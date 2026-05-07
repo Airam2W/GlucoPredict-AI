@@ -479,7 +479,7 @@ onAuthStateChanged(auth, async (user) => {
 
 
 
-export function mostrarPrediccion(riesgo, explicaciones, recomendaciones, fecha) {
+export function mostrarPrediccion(riesgo, explicaciones, recomendaciones, metricas, fecha) {
     // Riesgo
     if (riesgo < 30) {
         riesgoEl.innerText = `${riesgo}% (Bajo)`;
