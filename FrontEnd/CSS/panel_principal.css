@@ -25,11 +25,13 @@ body{
   border: 1px solid var(--border);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   padding: 8px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.35s var(--transition-spring),
+              box-shadow 0.35s ease;
+  animation: float 5s ease-in-out infinite;
 }
 .corner-logo:hover{
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.15);
+  transform: translateY(-5px) scale(1.08);
+  box-shadow: 0 16px 36px rgba(37, 99, 235, 0.2);
 }
 
 /* botón de paga */
@@ -77,8 +79,9 @@ p{
   width: min(980px, 100%);
   display:grid;
   grid-template-columns: repeat(2, minmax(260px, 1fr));
-  gap: 16px;
+  gap: 18px;
   margin-top: 6px;
+  animation: fadeInUp 0.6s var(--transition-smooth) 0.1s both;
 }
 
 /* tarjetas */
@@ -90,15 +93,57 @@ p{
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 24px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: transform 0.35s var(--transition-spring),
+              box-shadow 0.35s ease,
+              border-color 0.3s ease;
   display: flex;
   flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInScale 0.5s var(--transition-spring) both;
+}
+
+/* Entradas escalonadas */
+.panel-card:nth-child(1) { animation-delay: 0.08s; }
+.panel-card:nth-child(2) { animation-delay: 0.16s; }
+.panel-card:nth-child(3) { animation-delay: 0.24s; }
+.panel-card:nth-child(4) { animation-delay: 0.32s; }
+
+/* Línea de brillo superior */
+.panel-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  pointer-events: none;
+}
+
+/* Shimmer en hover */
+.panel-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255,255,255,0.14) 50%,
+    transparent 60%
+  );
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.panel-card:hover::after {
+  left: 150%;
 }
 
 .panel-card:hover{
-  transform: translateY(-6px);
-  box-shadow: 0 20px 40px -10px rgba(37, 99, 235, 0.15);
-  border-color: var(--input-border);
+  transform: translateY(-7px) scale(1.01);
+  box-shadow: 0 24px 48px -12px rgba(37, 99, 235, 0.18);
+  border-color: rgba(37, 99, 235, 0.25);
 }
 
 .panel-card h2{

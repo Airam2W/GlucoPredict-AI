@@ -1,73 +1,179 @@
-body{
+/* =========================
+   LAYOUT PRINCIPAL
+========================= */
+body {
   min-height: 100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  padding: 32px 16px;
-  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px 48px;
+  gap: 20px;
 }
 
-h2{ margin:0; color: var(--primary); text-align:center; }
-
-h3{
+h2 {
   margin: 0;
-  width: min(720px, 100%);
-  text-align:left;
-  color: var(--text);
+  color: var(--primary);
+  text-align: center;
 }
 
-p{
-  width: min(720px, 100%);
-  text-align:left;
-  margin:0;
+h3 {
+  margin: 0;
+  width: min(760px, 100%);
+  text-align: left;
+  color: var(--text);
+  font-size: 1.05rem;
+}
+
+p {
+  width: min(760px, 100%);
+  text-align: left;
+  margin: 0;
   color: var(--muted);
 }
 
-strong{ color: var(--primary); }
-
-button{
-  width: min(720px, 100%);
+strong {
+  color: var(--primary);
 }
 
+button {
+  width: min(760px, 100%);
+}
+
+/* =========================
+   CARDS GENERALES MEJORADAS
+========================= */
+.card {
+  width: min(760px, 100%);
+  padding: 24px 28px;
+  border-radius: 22px;
+  animation: fadeInUp 0.55s var(--transition-smooth) both;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Línea de luz superior en cada card */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 15%; right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  pointer-events: none;
+}
+
+/* Entradas escalonadas de cards */
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.12s; }
+.card:nth-child(3) { animation-delay: 0.20s; }
+.card:nth-child(4) { animation-delay: 0.28s; }
+.card:nth-child(5) { animation-delay: 0.36s; }
+
+/* =========================
+   CONTENEDOR DE GRÁFICAS
+========================= */
 .charts-container {
-  width: min(720px, 100%);
+  width: min(760px, 100%);
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
+  animation: fadeInUp 0.55s var(--transition-smooth) 0.3s both;
 }
 
-.explicacion-item{
-  background: var(--card);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  padding: 16px 20px;
-  border-left: 5px solid var(--primary);
-  border-radius: 16px;
-  font-size: 15px;
-  color: var(--text);
-  box-shadow: var(--shadow);
-  border-top: 1px solid var(--border);
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
+/* =========================
+   BADGE DE RIESGO
+========================= */
+#riesgoPrediccion {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-family: "Outfit", sans-serif;
+  display: inline-block;
+  transition: color 0.4s ease;
 }
+
+/* Pulso según nivel de riesgo — aplicado vía JS */
+.riesgo-bajo   { animation: pulseGlowAccent 2.5s ease-in-out infinite; }
+.riesgo-medio  { animation: pulseGlowWarn 2.5s ease-in-out infinite; }
+.riesgo-alto   { animation: pulseGlowDanger 2.5s ease-in-out infinite; }
+
+@keyframes pulseGlowWarn {
+  0%, 100% { text-shadow: 0 0 0 rgba(245, 158, 11, 0); }
+  50%       { text-shadow: 0 0 16px rgba(245, 158, 11, 0.5); }
+}
+
+@keyframes pulseGlowDanger {
+  0%, 100% { text-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+  50%       { text-shadow: 0 0 16px rgba(239, 68, 68, 0.5); }
+}
+
+/* =========================
+   ITEMS DE EXPLICACIÓN Y RECOMENDACIÓN
+========================= */
+.explicacion-item,
 .recomendacion-item {
   background: var(--card);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  padding: 16px 20px;
-  border-left: 5px solid var(--accent);
-  border-radius: 16px;
-  font-size: 15px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  font-size: 14.5px;
   color: var(--text);
   box-shadow: var(--shadow);
+  margin-bottom: 8px;
+  transition: transform 0.25s var(--transition-spring),
+              box-shadow 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.5s var(--transition-smooth) both;
+}
+
+.explicacion-item:hover,
+.recomendacion-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+.explicacion-item {
+  border-left: 4px solid var(--primary);
   border-top: 1px solid var(--border);
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+}
+
+.recomendacion-item {
+  border-left: 4px solid var(--accent);
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Pequeño brillo lateral */
+.explicacion-item::after,
+.recomendacion-item::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.4), transparent);
+  border-radius: 4px 0 0 4px;
 }
 
 #explicacionesPrediccion,
 #recomendacionesPrediccion {
   margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
+
+/* Animación escalonada de items */
+.explicacion-item:nth-child(1),
+.recomendacion-item:nth-child(1) { animation-delay: 0.05s; }
+.explicacion-item:nth-child(2),
+.recomendacion-item:nth-child(2) { animation-delay: 0.12s; }
+.explicacion-item:nth-child(3),
+.recomendacion-item:nth-child(3) { animation-delay: 0.20s; }
+.explicacion-item:nth-child(4),
+.recomendacion-item:nth-child(4) { animation-delay: 0.28s; }
+
