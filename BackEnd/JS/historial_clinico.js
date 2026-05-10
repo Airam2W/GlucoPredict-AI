@@ -22,7 +22,7 @@ const bmiInput = document.getElementById("bmi");
 const glucoseInput = document.getElementById("glucose");
 const bpInput = document.getElementById("bp");
 const hba1cInput = document.getElementById("hba1c");
-const trigliceridosInput = document.getElementById("trigliceridos");
+const triglicéridosInput = document.getElementById("triglicéridos");
 const hdlInput = document.getElementById("hdl");
 const circunferencia_cinturaInput = document.getElementById("circunferencia_cintura");
 const familyInput = document.getElementById("family");
@@ -44,7 +44,7 @@ const validator = attachValidation(historialForm, {
         validate: (value) => validateRequiredSelect(value, "sexo")
     },
     activity: {
-        validate: (value) => validateRequiredSelect(value, "actividad fisica")
+        validate: (value) => validateRequiredSelect(value, "actividad física")
     },
     alcohol: {
         validate: (value) => validateRequiredSelect(value, "consumo de alcohol")
@@ -56,13 +56,13 @@ const validator = attachValidation(historialForm, {
         validate: (value) => validateRequiredNumber(value, "glucosa en ayunas", 40, 600)
     },
     bp: {
-        validate: (value) => validateRequiredNumber(value, "presion arterial sistolica", 70, 250)
+        validate: (value) => validateRequiredNumber(value, "presión arterial sistólica", 70, 250)
     },
     hba1c: {
         validate: (value) => validateRequiredNumber(value, "HbA1c", 3, 20)
     },
-    trigliceridos: {
-        validate: (value) => validateRequiredNumber(value, "trigliceridos", 10, 1000)
+    triglicéridos: {
+        validate: (value) => validateRequiredNumber(value, "triglicéridos", 10, 1000)
     },
     hdl: {
         validate: (value) => validateRequiredNumber(value, "HDL", 10, 150)
@@ -75,7 +75,7 @@ const validator = attachValidation(historialForm, {
 let personaCache = null;
 
 if (!tipo || !personaId || (tipo === "paciente" && !clinicaId)) {
-    alert("Contexto invalido");
+    alert("Contexto inválido");
     window.location.href = "panel_principal.html";
 }
 
@@ -190,8 +190,8 @@ function actualizarInputs(datos) {
     if (datos.hba1c !== undefined && datos.hba1c !== null && datos.hba1c !== "") {
         hba1cInput.value = datos.hba1c;
     }
-    if (datos.trigliceridos !== undefined && datos.trigliceridos !== null && datos.trigliceridos !== "") {
-        trigliceridosInput.value = datos.trigliceridos;
+    if (datos.triglicéridos !== undefined && datos.triglicéridos !== null && datos.triglicéridos !== "") {
+        triglicéridosInput.value = datos.triglicéridos;
     }
     if (datos.hdl !== undefined && datos.hdl !== null && datos.hdl !== "") {
         hdlInput.value = datos.hdl;
@@ -275,7 +275,7 @@ function extraerDatos(texto) {
         ),
         edad: extraerNumero(texto, /Edad[:\s]*(\d{1,3})/i),
         sexo: normalizarSexo(sexoRaw),
-        imc: extraerNumero(texto, /(IMC|Indice de masa corporal|\u00CDndice de masa corporal)[:\s]*([\d.,]+)/i, 2),
+        imc: extraerNumero(texto, /(IMC|Índice de masa corporal|\u00CDndice de masa corporal)[:\s]*([\d.,]+)/i, 2),
         glucosa: extraerNumero(texto, /Glucosa(?: en ayuno)?[:\s]*(\d{2,3})/i),
         presion_sistolica: presionMatch ? Number(presionMatch[2]) : "",
         antecedentes_familiares_diabetes: /(antecedentes.*diabetes|familia.*diabetes)/i.test(texto),
@@ -297,7 +297,7 @@ async function procesarPDF(e) {
         const texto = await leerPDF(file);
         actualizarInputs(extraerDatos(texto));
         validator.validateAll();
-        pdfStatus.innerText = "Datos extraidos del PDF. Revisa la informacion antes de guardar.";
+        pdfStatus.innerText = "Datos extraídos del PDF. Revisa la información antes de guardar.";
     } catch (error) {
         console.error("Error al procesar PDF:", error);
         pdfStatus.innerText = "Error al procesar el PDF.";
@@ -343,7 +343,7 @@ historialForm.addEventListener("submit", async (e) => {
         hipertension: hypertensionInput.checked,
         actividad_fisica: activityInput.value,
         alcohol: alcoholInput.value,
-        trigliceridos: Number(trigliceridosInput.value),
+        triglicéridos: Number(triglicéridosInput.value),
         hdl: Number(hdlInput.value),
         circunferencia_cintura: Number(circunferencia_cinturaInput.value),
         updatedAt: new Date()
@@ -353,7 +353,7 @@ historialForm.addEventListener("submit", async (e) => {
     await actualizarPersona(user, data);
 
     setFormFeedback(historialForm, "", "success");
-    saveStatus.innerText = "Historial clinico guardado correctamente.";
+    saveStatus.innerText = "Historial clínico guardado correctamente.";
 
     setTimeout(() => {
         btnVolver.click();

@@ -1,9 +1,9 @@
-﻿import { auth, db } from "./configurationFirebase.js";
+import { auth, db } from "./configurationFirebase.js";
 import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { deleteClinicaCompleta, deletePacienteCompleto } from "./crud_helpers.js";
 
-import { MAX_PACIENTES } from "./reestrinccionesLicencia.js";
+import { MAX_PACIENTES } from "./restriccionesLicencia.js";
 
 const params = new URLSearchParams(window.location.search);
 const clinicaId = params.get("id");
@@ -23,7 +23,7 @@ const btnEliminarClinica = document.getElementById("btnEliminarClinica");
 
 
 if (!clinicaId) {
-    alert("Clinica no encontrada");
+    alert("Clínica no encontrada");
     window.location.href = "medico_dashboard.html";
 }
 
@@ -53,7 +53,7 @@ function crearItemPaciente(user, pacienteId, paciente) {
     btnEliminar.className = "danger-button";
     btnEliminar.textContent = "Eliminar";
     btnEliminar.addEventListener("click", async () => {
-        const confirmado = window.confirm(`Eliminar al paciente ${paciente.nombre || "seleccionado"}?`);
+        const confirmado = window.confirm(`¿Eliminar al paciente ${paciente.nombre || "seleccionado"}?`);
         if (!confirmado) {
             return;
         }
@@ -81,16 +81,16 @@ onAuthStateChanged(auth, async (user) => {
     const clinicaSnap = await getDoc(clinicaRef);
 
     if (!clinicaSnap.exists()) {
-        alert("Clinica no encontrada");
+        alert("Clínica no encontrada");
         return;
     }
 
     const clinica = clinicaSnap.data();
-    nombreClinica.textContent = `Clinica: ${clinica.nombre}`;
-    direccionClinica.textContent = textoSeguro(clinica.direccion, "Direccion: ");
-    telefonoClinica.textContent = textoSeguro(clinica.telefono, "Telefono: ");
+    nombreClinica.textContent = `Clínica: ${clinica.nombre}`;
+    direccionClinica.textContent = textoSeguro(clinica.direccion, "Dirección: ");
+    telefonoClinica.textContent = textoSeguro(clinica.telefono, "Teléfono: ");
     correoClinica.textContent = textoSeguro(clinica.correo, "Correo: ");
-    responsableClinica.textContent = textoSeguro(clinica.responsable, "Responsable medico: ");
+    responsableClinica.textContent = textoSeguro(clinica.responsable, "Responsable médico: ");
     especialidadClinica.textContent = textoSeguro(clinica.especialidad, "Especialidad: ");
     horarioClinica.textContent = textoSeguro(clinica.horario, "Horario: ");
 
@@ -102,11 +102,11 @@ onAuthStateChanged(auth, async (user) => {
     console.log("Número de pacientes:", numeroPacientes);
 
     if (numeroPacientes >= MAX_PACIENTES) {
-        btnAgregarPaciente.title = "Solo disponible maximo 3 pacientes para usuarios no PAGA. Actualiza a PAGA para agregar más.";
+        btnAgregarPaciente.title = "Solo disponible máximo 3 pacientes para usuarios no PAGA. Actualiza a PAGA para agregar más.";
         btnAgregarPaciente.style.backgroundColor = "var(--disabled-bg)";
         btnAgregarPaciente.style.cursor = "not-allowed";
         btnAgregarPaciente.onclick = () => {
-            const respuesta = confirm("Solo disponible maximo 3 pacientes para usuarios no PAGA. ¿Deseas ir a la página de pago?");
+            const respuesta = confirm("Solo disponible máximo 3 pacientes para usuarios no PAGA. ¿Deseas ir a la página de pago?");
             if (respuesta) {
                 // El usuario presionó "Aceptar"
                 window.location.href = "../../FrontEnd/HTML/paga.html?where=clinicas";
@@ -126,7 +126,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     btnEliminarClinica.onclick = async () => {
-        const confirmado = window.confirm(`Eliminar la clinica ${clinica.nombre || "seleccionada"} y todos sus pacientes?`);
+        const confirmado = window.confirm(`¿Eliminar la clínica ${clinica.nombre || "seleccionada"} y todos sus pacientes?`);
         if (!confirmado) {
             return;
         }

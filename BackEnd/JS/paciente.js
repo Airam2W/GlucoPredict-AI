@@ -17,7 +17,7 @@ export const pacienteId = params.get("id");
 export const clinicaId = params.get("clinica");
 
 if (!pacienteId || !clinicaId) {
-    alert("Paciente o clinica no validos");
+    alert("Paciente o clínica no válidos");
     window.location.href = "panel_principal.html";
 }
 
@@ -260,7 +260,7 @@ onAuthStateChanged(auth, async (user) => {
         return;
     }
 
-    // Reestringir acceso a características de usuario no PAGA
+    // Restringir acceso a características de usuario no PAGA
     const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
         
@@ -445,7 +445,7 @@ onAuthStateChanged(auth, async (user) => {
             explicaciones.forEach((explicacion) => {
                 const p = document.createElement("p");
                 p.classList.add("explicacion-item");
-                p.innerText = `🔍 Analisis: ${explicacion}`;
+                p.innerText = `🔍 Análisis: ${explicacion}`;
                 explicacionesEl.appendChild(p);
             });
 
@@ -454,7 +454,7 @@ onAuthStateChanged(auth, async (user) => {
             recomendaciones.forEach((recomendacion) => {
                 const p = document.createElement("p");
                 p.classList.add("recomendacion-item");
-                p.innerText = `💡 Recomendacion: ${recomendacion}`;
+                p.innerText = `💡 Recomendación: ${recomendacion}`;
                 recomendacionesEl.appendChild(p);
             });
 
@@ -463,7 +463,7 @@ onAuthStateChanged(auth, async (user) => {
         }
 
         btnEliminarPaciente.onclick = async () => {
-            const confirmado = window.confirm(`Eliminar al paciente ${paciente.nombre || "seleccionado"}?`);
+            const confirmado = window.confirm(`¿Eliminar al paciente ${paciente.nombre || "seleccionado"}?`);
             if (!confirmado) {
                 return;
             }

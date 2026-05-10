@@ -20,12 +20,12 @@ if (form && emailInput && passwordInput) {
         errorMsg.innerText = "";
 
         if (!email.includes("@") || !email.includes(".")) {
-            errorMsg.innerText = "Correo no valido.";
+            errorMsg.innerText = "Correo no válido.";
             return;
         }
 
         if (password.length < 6) {
-            errorMsg.innerText = "La contrasena debe tener al menos 6 caracteres.";
+            errorMsg.innerText = "La contraseña debe tener al menos 6 caracteres.";
             return;
         }
 
@@ -45,13 +45,13 @@ if (form && emailInput && passwordInput) {
 
             switch (error.code) {
                 case "auth/email-already-in-use":
-                    errorMsg.innerText = "El correo ya esta registrado.";
+                    errorMsg.innerText = "El correo ya está registrado.";
                     break;
                 case "auth/invalid-email":
-                    errorMsg.innerText = "Formato de correo invalido.";
+                    errorMsg.innerText = "Formato de correo inválido.";
                     break;
                 case "auth/weak-password":
-                    errorMsg.innerText = "La contrasena es muy debil.";
+                    errorMsg.innerText = "La contraseña es muy débil.";
                     break;
                 default:
                     errorMsg.innerText = "Error al registrar usuario.";

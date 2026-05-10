@@ -283,10 +283,10 @@ function seleccionarPrediccion(pred, element) {
 
     prediccionSeleccionada = pred;
 
-    // Vaciar las graficas
+    // Vaciar las gráficas
     vaciarGrafica();
 
-    //Vaciar recomendaciones anteriores
+    // Vaciar recomendaciones anteriores
     resetearRecomendaciones();
 
     // 🔹 actualizar riesgo
@@ -307,7 +307,7 @@ function seleccionarPrediccion(pred, element) {
     // 🔥 reconstruir impacto basado en esas recomendaciones
     (pred.recomendaciones || []).forEach(r => {
 
-        // Usar la funcion de generarImpacto para cada recomendación, asumiendo que el formato de las recomendaciones en la predicción es el mismo que el de las recomendaciones originales
+        // Usar la función generarImpacto para cada recomendación, asumiendo que el formato de las recomendaciones en la predicción es el mismo que el de las recomendaciones originales
         const impactoGenerado = generarImpacto({ recommendation: r, impact: 10 }); // Puedes ajustar el valor de impacto según tus necesidades
 
         impacto[r] = impactoGenerado;
@@ -353,7 +353,7 @@ function mapearAccionesDesdePrediccion(pred) {
 }
 
 /* -----------------------------
-   SIMULACION
+   SIMULACIÓN
 ----------------------------- */
 async function simular() {
 
@@ -454,7 +454,7 @@ async function simular() {
 }
 
 /* -----------------------------
-   GRAFICAS
+   GRÁFICAS
 ----------------------------- */
 function crearLineaChart(ctx, data, label, color) {
     return new Chart(ctx, {
@@ -488,7 +488,7 @@ function mostrarGraficaGlucosa(data) {
 }
 
 /* -----------------------------
-   INTERPRETACION
+   INTERPRETACIÓN
 ----------------------------- */
 function interpretarResultados(riesgo, imc, glucosa, semanas) {
 

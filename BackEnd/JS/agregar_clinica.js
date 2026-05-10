@@ -8,7 +8,7 @@ import {
     setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { MAX_CLINICAS } from "./reestrinccionesLicencia.js";
+import { MAX_CLINICAS } from "./restriccionesLicencia.js";
 import {
     attachValidation,
     validateOptionalEmail,
@@ -26,29 +26,29 @@ const titulo = document.getElementById("tituloClinica");
 const btnGuardar = document.getElementById("btnGuardarClinica");
 const validator = attachValidation(form, {
     nombreClinica: {
-        validate: (value) => validateRequiredText(value, "nombre de la clinica", { min: 3, max: 100 })
+        validate: (value) => validateRequiredText(value, "nombre de la clínica", { min: 3, max: 100 })
     },
     direccionClinica: {
-        validate: (value) => validateRequiredText(value, "direccion", {
+        validate: (value) => validateRequiredText(value, "dirección", {
             min: 5,
             max: 150,
             pattern: /^[A-Za-z\u00C0-\u017F0-9.,/#()\- ]+$/
         })
     },
     telefonoClinica: {
-        validate: (value) => validateOptionalPhone(value, "telefono de contacto")
+        validate: (value) => validateOptionalPhone(value, "teléfono de contacto")
     },
     correoClinica: {
         validate: (value) => validateOptionalEmail(value, "correo de contacto")
     },
     responsableClinica: {
-        validate: (value) => validateOptionalText(value, "responsable medico", { min: 3, max: 80 })
+        validate: (value) => validateOptionalText(value, "responsable médico", { min: 3, max: 80 })
     },
     especialidadClinica: {
         validate: (value) => validateOptionalText(value, "especialidad principal", { min: 3, max: 80 })
     },
     horarioClinica: {
-        validate: (value) => validateOptionalText(value, "horario de atencion", {
+        validate: (value) => validateOptionalText(value, "horario de atención", {
             min: 3,
             max: 80,
             pattern: /^[A-Za-z\u00C0-\u017F0-9:,\- ]+$/
@@ -61,7 +61,7 @@ function actualizarTextosModo() {
         return;
     }
 
-    titulo.textContent = "Editar clinica";
+    titulo.textContent = "Editar clínica";
     btnGuardar.textContent = "Guardar cambios";
 }
 
@@ -97,7 +97,7 @@ onAuthStateChanged(auth, async (user) => {
     const clinicaSnap = await getDoc(clinicaRef);
 
     if (!clinicaSnap.exists()) {
-        alert("Clinica no encontrada");
+        alert("Clínica no encontrada");
         window.location.href = "medico_dashboard.html";
         return;
     }

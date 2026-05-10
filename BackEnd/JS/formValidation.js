@@ -149,7 +149,7 @@ export function validateOptionalText(value, label, options = {}) {
 
 export function validateRequiredSelect(value, label) {
     if (!String(value || "").trim()) {
-        return `Selecciona una opcion para ${label}.`;
+        return `Selecciona una opción para ${label}.`;
     }
 
     return "";
@@ -164,7 +164,7 @@ export function validateInteger(value, label, min, max) {
 
     const number = Number(trimmed);
     if (!Number.isInteger(number)) {
-        return `${label} debe ser un numero entero.`;
+        return `${label} debe ser un número entero.`;
     }
     if (number < min || number > max) {
         return `${label} debe estar entre ${min} y ${max}.`;
@@ -182,7 +182,7 @@ export function validateOptionalNumber(value, label, min, max) {
 
     const number = Number(trimmed);
     if (Number.isNaN(number)) {
-        return `${label} debe ser un numero valido.`;
+        return `${label} debe ser un número válido.`;
     }
     if (number < min || number > max) {
         return `${label} debe estar entre ${min} y ${max}.`;
@@ -200,7 +200,7 @@ export function validateRequiredNumber(value, label, min, max) {
 
     const number = Number(trimmed);
     if (Number.isNaN(number)) {
-        return `${label} debe ser un numero valido.`;
+        return `${label} debe ser un número válido.`;
     }
     if (number < min || number > max) {
         return `${label} debe estar entre ${min} y ${max}.`;
@@ -209,7 +209,7 @@ export function validateRequiredNumber(value, label, min, max) {
     return "";
 }
 
-export function validateOptionalPhone(value, label = "telefono") {
+export function validateOptionalPhone(value, label = "teléfono") {
     const trimmed = String(value || "").trim();
 
     if (!trimmed) {
@@ -218,18 +218,18 @@ export function validateOptionalPhone(value, label = "telefono") {
 
     const allowedPhonePattern = /^\+?[\d\s\-()]+$/;
     if (!allowedPhonePattern.test(trimmed)) {
-        return `El ${label} solo puede contener numeros, espacios, parentesis, guiones y el signo +.`;
+        return `El ${label} solo puede contener números, espacios, paréntesis, guiones y el signo +.`;
     }
 
     const digits = trimmed.replace(/\D/g, "");
     if (digits.length < 10 || digits.length > 15) {
-        return `El ${label} debe tener entre 10 y 15 digitos.`;
+        return `El ${label} debe tener entre 10 y 15 dígitos.`;
     }
 
     return "";
 }
 
-export function validateOptionalEmail(value, label = "correo electronico") {
+export function validateOptionalEmail(value, label = "correo electrónico") {
     const trimmed = String(value || "").trim();
 
     if (!trimmed) {
@@ -238,7 +238,7 @@ export function validateOptionalEmail(value, label = "correo electronico") {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(trimmed)) {
-        return `Ingresa un ${label} valido.`;
+        return `Ingresa un ${label} válido.`;
     }
 
     return "";
@@ -252,7 +252,7 @@ export function validateBloodType(value) {
     }
 
     if (!/^(A|B|AB|O)[+-]$/.test(trimmed)) {
-        return "Ingresa un tipo de sangre valido. Ejemplo: O+.";
+        return "Ingresa un tipo de sangre válido. Ejemplo: O+.";
     }
 
     return "";

@@ -1,13 +1,13 @@
-- Install flask
+- Instalar Flask
 pip install flask-cors
 pip install flask
 
--Install firebase
+- Instalar Firebase
 npm install firebase
 
--Install PDF
+- Instalar dependencias para PDF
 pip install pdfplumber
 
--Install Python
+- Instalar dependencias de Python
 pip install pytesseract
 pip install Pillow

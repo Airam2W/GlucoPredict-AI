@@ -1,11 +1,11 @@
-﻿import { auth, db } from "./configurationFirebase.js";
+import { auth, db } from "./configurationFirebase.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { deletePerfilCompleto } from "./crud_helpers.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-import { MAX_PERFILES } from "./reestrinccionesLicencia.js";
+import { MAX_PERFILES } from "./restriccionesLicencia.js";
 
 const lista = document.getElementById("listaPerfiles");
 
@@ -34,7 +34,7 @@ function crearItemPerfil(user, perfilId, data) {
     btnEliminar.className = "danger-button";
     btnEliminar.textContent = "Eliminar";
     btnEliminar.addEventListener("click", async () => {
-        const confirmado = window.confirm(`Eliminar el perfil ${data.nombre || "seleccionado"}?`);
+        const confirmado = window.confirm(`¿Eliminar el perfil ${data.nombre || "seleccionado"}?`);
         if (!confirmado) {
             return;
         }
@@ -65,7 +65,7 @@ auth.onAuthStateChanged(async (user) => {
     console.log(`Número de perfiles: ${numeroPerfiles}`);
 
     if (numeroPerfiles >= MAX_PERFILES) {
-        // Reestringir acceso a características de usuario no PAGA
+        // Restringir acceso a características de usuario no PAGA
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
         
@@ -75,11 +75,11 @@ auth.onAuthStateChanged(async (user) => {
             console.log("Tipo de usuario:", window.user.tipo);
             
             if (window.user.tipo !== "PAGA") {
-                btnAgregarPerfil.title = "Solo disponible maximo 3 perfiles para usuarios no PAGA. Actualiza a PAGA para agregar más.";
+                btnAgregarPerfil.title = "Solo disponible máximo 3 perfiles para usuarios no PAGA. Actualiza a PAGA para agregar más.";
                 btnAgregarPerfil.style.backgroundColor = "var(--disabled-bg)";
                 btnAgregarPerfil.style.cursor = "not-allowed";
                 btnAgregarPerfil.onclick = () => {
-                    const respuesta = confirm("Solo disponible maximo 3 perfiles para usuarios no PAGA. ¿Deseas ir a la página de pago?");
+                    const respuesta = confirm("Solo disponible máximo 3 perfiles para usuarios no PAGA. ¿Deseas ir a la página de pago?");
                     if (respuesta) {
                         // El usuario presionó "Aceptar"
                         window.location.href = "../../FrontEnd/HTML/paga.html?where=perfiles";

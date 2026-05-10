@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial Clinico</title>
+    <title>Historial Clínico</title>
     <link rel="icon" type="image/png" href="/GlucoPredict-AI/FrontEnd/img/logosolo.png">
     <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/historial_clinico.css">
     <script src="/GlucoPredict-AI/BackEnd/JS/theme.js"></script>
@@ -14,22 +14,22 @@
     
 <img src="/GlucoPredict-AI/FrontEnd/img/logo.png" alt="Logo" class="corner-logo" onclick="window.location.href='../HTML/panel_principal.html'">
 
-<h2>Historial Clinico</h2>
+<h2>Historial Clínico</h2>
 
 <p>
-    Ingrese la informacion clinica del paciente o cargue un archivo PDF.
-    El sexo se recupera del perfil y el IMC se calcula automaticamente cuando hay peso y altura.
+    Ingrese la información clínica del paciente o cargue un archivo PDF.
+    El sexo se recupera del perfil y el IMC se calcula automáticamente cuando hay peso y altura.
 </p>
 
 <hr>
  
-<h3>Subir historial clinico (PDF)</h3>
+<h3>Subir historial clínico (PDF)</h3>
 <input type="file" id="pdfFile" accept="application/pdf">
 <p id="pdfStatus"></p>
 
 <hr>
 
-<h3>Informacion personal</h3>
+<h3>Información personal</h3>
 
 <form id="historialForm" novalidate>
 
@@ -41,7 +41,7 @@
 
 <label>Sexo:</label><br>
 <select id="sex" required>
-    <option value="" disabled selected>Selecciona una opcion</option>
+    <option value="" disabled selected>Selecciona una opción</option>
     <option value="Masculino">Masculino</option>
     <option value="Femenino">Femenino</option>
     <option value="Otro">Otro</option>
@@ -58,16 +58,16 @@
 
 <label>
     <input type="checkbox" id="hypertension">
-    Diagnostico previo de hipertension
+    Diagnóstico previo de hipertensión
 </label><br><br>
 
 <hr>
 
-<h3>Habitos</h3>
+<h3>Hábitos</h3>
 
-<label>Actividad fisica:</label><br>
+<label>Actividad física:</label><br>
 <select id="activity">
-    <option value="" disabled selected>Selecciona una opcion</option>
+    <option value="" disabled selected>Selecciona una opción</option>
     <option value="sedentario">Sedentario</option>
     <option value="moderado">Moderado</option>
     <option value="activo">Activo</option>
@@ -75,7 +75,7 @@
 
 <label>Consumo de alcohol:</label><br>
 <select id="alcohol">
-    <option value="" disabled selected>Selecciona una opcion</option>
+    <option value="" disabled selected>Selecciona una opción</option>
     <option value="No">No consume</option>
     <option value="Ocasional">Ocasional</option>
     <option value="Frecuente">Frecuente</option>
@@ -83,21 +83,21 @@
 
 <hr>
 
-<h3>Datos clinicos</h3>
+<h3>Datos clínicos</h3>
 
-<label>Indice de Masa Corporal (IMC):</label><br>
+<label>Índice de Masa Corporal (IMC):</label><br>
 <input type="number" id="bmi" step="0.1" required><br><br>
 
 <label>Glucosa en ayunas (mg/dL):</label><br>
 <input type="number" id="glucose" required><br><br>
 
-<label>Presion arterial sistolica (mmHg):</label><br>
+<label>Presión arterial sistólica (mmHg):</label><br>
 <input type="number" id="bp" required><br><br>
 
 <label>Hemoglobina A1C (%):</label><br>
 <input type="number" id="hba1c" step="0.1" required><br><br>
 
-<label>Trigliceridos (mg/dL):</label><br>
+<label>Triglicéridos (mg/dL):</label><br>
 <input type="number" id="trigliceridos" required><br><br>
 
 <label>Colesterol HDL (mg/dL):</label><br>
@@ -107,8 +107,8 @@
 <input type="number" id="circunferencia_cintura" required><br><br>
 
 <div class="page-actions compact-actions">
-    <button type="submit">Guardar historial clinico</button>
-    <button type="button" id="btnVolver">Volver a la prediccion</button>
+    <button type="submit">Guardar historial clínico</button>
+    <button type="button" id="btnVolver">Volver a la predicción</button>
 </div>
 
 </form>

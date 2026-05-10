@@ -26,7 +26,7 @@ document.getElementById("googleLogin").addEventListener("click", async () => {
 
         if (isNewUser) {
             // -----------------------------
-            // CREAR DOCUMENTO (PRIMER LOGIN)
+            // CREAR DOCUMENTO (PRIMER INICIO DE SESIÓN)
             // -----------------------------
             await setDoc(userRef, {
                 email: user.email,
@@ -37,7 +37,7 @@ document.getElementById("googleLogin").addEventListener("click", async () => {
 
             console.log("Nuevo usuario creado en Firestore");
 
-            // 👉 Mandar a pantalla de pago
+            // 👉 Enviar a pantalla de pago
             window.location.href = "FrontEnd/HTML/paga.html?where=servicio";
 
         } else {
@@ -56,12 +56,12 @@ document.getElementById("googleLogin").addEventListener("click", async () => {
                 });
             }
 
-            // 👉 Ir directo al panel
+            // 👉 Ir directamente al panel
             window.location.href = "FrontEnd/HTML/panel_principal.html";
         }
 
     } catch (error) {
-        console.error("Error en login:", error);
+        console.error("Error en inicio de sesión:", error);
         alert("Error: " + error.message);
     }
 });

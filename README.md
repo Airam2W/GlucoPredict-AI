@@ -18,7 +18,7 @@
 - [Guía de Uso](#guía-de-uso)
 - [Roles de Usuario](#roles-de-usuario)
 - [Funcionalidades Detalladas](#funcionalidades-detalladas)
-- [Modelo de Pricing](#modelo-de-pricing)
+- [Modelo de Precios](#modelo-de-precios)
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
 - [Configuración de Firebase](#configuración-de-firebase)
@@ -429,7 +429,7 @@ El sistema retorna:
 
 ---
 
-## 💳 Modelo de Pricing
+## 💳 Modelo de Precios
 
 ### Plan Gratuito
 
@@ -506,7 +506,7 @@ GlucoPredict-AI/
 │       └── ...otros assets...
 │
 ├── BackEnd/
-│   ├── requeriments.txt               # Dependencias de Python y NPM
+│   ├── requirements.txt               # Dependencias de Python y NPM
 │   │
 │   ├── JS/
 │   │   ├── configurationFirebase.js   # Configuración de Firebase
@@ -525,7 +525,7 @@ GlucoPredict-AI/
 │   │   ├── licencia-guard.js          # Validación de licencia
 │   │   ├── formValidation.js          # Validación de formularios
 │   │   ├── crud_helpers.js            # Funciones CRUD auxiliares
-│   │   ├── reestrinccionesLicencia.js # Restricciones por licencia
+│   │   ├── restriccionesLicencia.js     # Restricciones por licencia
 │   │   └── ...otros JS...
 │   │
 │   └── api/
@@ -715,25 +715,25 @@ firestore-root
 
 ## 📈 Roadmap Futuro
 
-### Phase 1: Mejoras Inmediatas (1-2 meses)
+### Fase 1: Mejoras Inmediatas (1-2 meses)
 - Pulir interfaz de usuario
 - Completar validaciones de formularios
 - Mejorar responsividad móvil
 - Documentación completa del usuario
 
-### Phase 2: Funcionalidades Avanzadas (3-4 meses)
+### Fase 2: Funcionalidades Avanzadas (3-4 meses)
 - Reportes avanzados en PDF
 - Dashboard ejecutivo
 - Análisis estadístico mejorado
 - Sistema de reglas de predicción mejorado
 
-### Phase 3: Expansión (5-6 meses)
+### Fase 3: Expansión (5-6 meses)
 - API REST pública para integraciones
 - Aplicación móvil
 - Integración con sistemas externos
 - Soporte multiidioma
 
-### Phase 4: ML y IA Avanzada (7+ meses)
+### Fase 4: ML y IA Avanzada (7+ meses)
 - Machine Learning para personalización
 - Predicción mejorada con históricos
 - Análisis predictivo de evolución

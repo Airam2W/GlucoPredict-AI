@@ -1,10 +1,10 @@
-﻿import { auth, db } from "./configurationFirebase.js";
+import { auth, db } from "./configurationFirebase.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { deleteClinicaCompleta } from "./crud_helpers.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-import { MAX_CLINICAS } from "./reestrinccionesLicencia.js";
+import { MAX_CLINICAS } from "./restriccionesLicencia.js";
 
 const lista = document.getElementById("listaClinicas");
 
@@ -17,7 +17,7 @@ function crearItemClinica(user, clinicaId, clinica) {
     const telefonoTexto = clinica.telefono ? ` | Tel: ${clinica.telefono}` : "";
 
     const descripcion = document.createElement("span");
-    descripcion.textContent = `${clinica.nombre || "Clinica sin nombre"}${telefonoTexto}`;
+    descripcion.textContent = `${clinica.nombre || "Clínica sin nombre"}${telefonoTexto}`;
 
     const acciones = document.createElement("div");
     acciones.className = "list-actions";
@@ -31,7 +31,7 @@ function crearItemClinica(user, clinicaId, clinica) {
     btnEliminar.className = "danger-button";
     btnEliminar.textContent = "Eliminar";
     btnEliminar.addEventListener("click", async () => {
-        const confirmado = window.confirm(`Eliminar la clinica ${clinica.nombre || "seleccionada"}?`);
+        const confirmado = window.confirm(`¿Eliminar la clínica ${clinica.nombre || "seleccionada"}?`);
         if (!confirmado) {
             return;
         }
@@ -40,7 +40,7 @@ function crearItemClinica(user, clinicaId, clinica) {
         li.remove();
 
         if (!lista.children.length) {
-            lista.innerHTML = "<li>No tienes clinicas registradas</li>";
+            lista.innerHTML = "<li>No tienes clínicas registradas</li>";
         }
     });
 
@@ -64,7 +64,7 @@ onAuthStateChanged(auth, async (user) => {
     console.log("Número de clínicas:", numeroClinicas);
 
     if (numeroClinicas >= MAX_CLINICAS) {
-        // Reestringir acceso a características de usuario no PAGA
+        // Restringir acceso a características de usuario no PAGA
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
         
@@ -74,11 +74,11 @@ onAuthStateChanged(auth, async (user) => {
             console.log("Tipo de usuario:", window.user.tipo);
             
             if (window.user.tipo !== "PAGA") {
-                btnAgregarClinica.title = "Solo disponible maximo 1 clínica para usuarios no PAGA. Actualiza a PAGA para agregar más.";
+                btnAgregarClinica.title = "Solo disponible máximo 1 clínica para usuarios no PAGA. Actualiza a PAGA para agregar más.";
                 btnAgregarClinica.style.backgroundColor = "var(--disabled-bg)";
                 btnAgregarClinica.style.cursor = "not-allowed";
                 btnAgregarClinica.onclick = () => {
-                    const respuesta = confirm("Solo disponible maximo 1 clínica para usuarios no PAGA. ¿Deseas ir a la página de pago?");
+                    const respuesta = confirm("Solo disponible máximo 1 clínica para usuarios no PAGA. ¿Deseas ir a la página de pago?");
                     if (respuesta) {
                         // El usuario presionó "Aceptar"
                         window.location.href = "../../FrontEnd/HTML/paga.html?where=clinicas";
@@ -96,7 +96,7 @@ onAuthStateChanged(auth, async (user) => {
 
 
     if (snapshot.empty) {
-        lista.innerHTML = "<li>No tienes clinicas registradas</li>";
+        lista.innerHTML = "<li>No tienes clínicas registradas</li>";
         return;
     }
 

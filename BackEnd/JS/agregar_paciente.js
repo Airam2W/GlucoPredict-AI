@@ -8,7 +8,7 @@ import {
     setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { MAX_PACIENTES } from "./reestrinccionesLicencia.js";
+import { MAX_PACIENTES } from "./restriccionesLicencia.js";
 import {
     attachValidation,
     validateBloodType,
@@ -59,10 +59,10 @@ const validator = attachValidation(formPaciente, {
         validate: (value) => validateOptionalNumber(value, "altura", 30, 250)
     },
     telefonoPaciente: {
-        validate: (value) => validateOptionalPhone(value, "telefono")
+        validate: (value) => validateOptionalPhone(value, "teléfono")
     },
     correoPaciente: {
-        validate: (value) => validateOptionalEmail(value, "correo electronico")
+        validate: (value) => validateOptionalEmail(value, "correo electrónico")
     },
     contactoEmergenciaPaciente: {
         validate: (value) => validateOptionalText(value, "contacto de emergencia", { min: 3, max: 80 })
@@ -81,7 +81,7 @@ const validator = attachValidation(formPaciente, {
 });
 
 if (!clinicaId) {
-    alert("Clinica no encontrada");
+    alert("Clínica no encontrada");
     window.location.href = "medico_dashboard.html";
 }
 

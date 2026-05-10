@@ -8,7 +8,7 @@ import {
     setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { MAX_PERFILES } from "./reestrinccionesLicencia.js";
+import { MAX_PERFILES } from "./restriccionesLicencia.js";
 import {
     attachValidation,
     validateInteger,
@@ -56,10 +56,10 @@ const validator = attachValidation(formPerfil, {
         validate: (value) => validateOptionalNumber(value, "altura", 30, 250)
     },
     telefonoPerfil: {
-        validate: (value) => validateOptionalPhone(value, "telefono")
+        validate: (value) => validateOptionalPhone(value, "teléfono")
     },
     correoPerfil: {
-        validate: (value) => validateOptionalEmail(value, "correo electronico")
+        validate: (value) => validateOptionalEmail(value, "correo electrónico")
     },
     observacionesPerfil: {
         validate: (value) => validateOptionalText(value, "observaciones", {

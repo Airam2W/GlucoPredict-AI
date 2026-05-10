@@ -19,7 +19,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // -----------------------------
-// BOTÓN VOLVERSE DE PAGA
+// BOTÓN PARA ACTUALIZAR A PAGA
 // -----------------------------
 btnConfirmarPago.onclick = async () => {
 
@@ -30,7 +30,7 @@ btnConfirmarPago.onclick = async () => {
         return;
     }
 
-    // 🔥 (opcional) validación fake básica
+    // 🔥 (opcional) validación simulada básica
     const cardNumber = document.getElementById("cardNumber").value;
     const cvv = document.getElementById("cardCVV").value;
 
@@ -63,7 +63,7 @@ cerrarModal.onclick = () => {
     modal.classList.add("hidden");
 };
 
-// cerrar al hacer click fuera
+// cerrar al hacer clic fuera
 window.onclick = (e) => {
     if (e.target === modal) {
         modal.classList.add("hidden");
