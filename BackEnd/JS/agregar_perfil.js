@@ -104,9 +104,11 @@ onAuthStateChanged(auth, async (user) => {
         const ref = collection(db, "users", user.uid, "perfiles");
         const snapshot = await getDocs(ref);
 
-        if (snapshot.size >= MAX_PERFILES) {
-            alert(`Has alcanzado el límite de ${MAX_PERFILES} perfiles. No puedes agregar más.`);
-            window.location.href = "persona_dashboard.html";
+        if (window.user.tipo !== "PAGA") {
+            if (snapshot.size >= MAX_PERFILES) {
+                alert(`Has alcanzado el límite de ${MAX_PERFILES} perfiles. No puedes agregar más.`);
+                window.location.href = "persona_dashboard.html";
+            }
         }
         return;
     }

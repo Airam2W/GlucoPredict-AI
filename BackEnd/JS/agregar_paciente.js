@@ -121,10 +121,11 @@ onAuthStateChanged(auth, async (user) => {
     if (!isEditMode) {
         const ref = collection(db, "users", user.uid, "clinicas", clinicaId, "pacientes");
         const snapshot = await getDocs(ref);
-
-        if (snapshot.size >= MAX_PACIENTES) {
-            alert(`Has alcanzado el límite de ${MAX_PACIENTES} pacientes. No puedes agregar más.`);
-            window.location.href = `clinica.html?id=${clinicaId}`;
+        if (window.user.tipo !== "PAGA") {
+            if (snapshot.size >= MAX_PACIENTES) {
+                alert(`Has alcanzado el límite de ${MAX_PACIENTES} pacientes. No puedes agregar más.`);
+                window.location.href = `clinica.html?id=${clinicaId}`;
+            }
         }
         return;
     }

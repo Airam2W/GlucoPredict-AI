@@ -86,11 +86,12 @@ onAuthStateChanged(auth, async (user) => {
         const ref = collection(db, "users", user.uid, "clinicas");
         const snapshot = await getDocs(ref);
 
-        if (snapshot.size >= MAX_CLINICAS) {
-            alert(`Has alcanzado el límite de ${MAX_CLINICAS} clínicas. No puedes agregar más.`);
-            window.location.href = "medico_dashboard.html";
+        if (window.user.tipo !== "PAGA") {
+            if (snapshot.size >= MAX_CLINICAS) {
+                alert(`Has alcanzado el límite de ${MAX_CLINICAS} clínicas. No puedes agregar más.`);
+                window.location.href = "medico_dashboard.html";
+            }
         }
-        return;
     }
 
     const clinicaRef = doc(db, "users", user.uid, "clinicas", clinicaId);
