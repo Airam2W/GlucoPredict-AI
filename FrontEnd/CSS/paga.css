@@ -67,6 +67,9 @@ button{
   button{
     width: 100%;
   }
+  .modal-content::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* MODAL */
@@ -84,6 +87,20 @@ button{
     z-index: 999;
 }
 
+.modal-content hr {
+    border: none;
+    border-top: 1.5px solid var(--primary);
+    margin: 20px 0;
+    opacity: 0.8;
+    transition: border-color 0.25s ease, opacity 0.25s ease;
+}
+
+.modal-content hr:hover {
+    border-color: var(--shadow);
+    opacity: 1;
+}
+
+
 .hidden {
     display: none;
 }
@@ -92,14 +109,35 @@ button{
     background: var(--surface-strong);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    padding: 32px;
+    padding: 14px;
     border-radius: 24px;
-    width: 100%;
+    width: 90%;
     max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
     box-shadow: 0 32px 80px rgba(0, 0, 0, 0.15);
     border: 1px solid var(--border);
     animation: fadeIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-sizing: border-box;
+    scrollbar-gutter: stable both-edges;
 }
+
+/* Scrollbar estilizado */
+.modal-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 12px;
+    border: 2px solid var(--surface-strong); /* se integra con el fondo */
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: var(--border);
+    border-radius: 12px;
+}
+
 
 .close {
     float: right;

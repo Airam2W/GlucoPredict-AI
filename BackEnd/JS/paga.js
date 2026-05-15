@@ -12,6 +12,9 @@ const modal = document.getElementById("modalPago");
 const cerrarModal = document.getElementById("cerrarModal");
 const btnConfirmarPago = document.getElementById("btnConfirmarPago");
 
+const btnAplicarCodigo = document.getElementById("btnAplicarCodigo");
+const giftCode = document.getElementById("giftCode");
+
 onAuthStateChanged(auth, (user) => {
     if (!user) {
         window.location.href = "../../index.html";
@@ -54,6 +57,41 @@ btnConfirmarPago.onclick = async () => {
         alert("Error al actualizar el plan");
     }
 };
+
+
+btnAplicarCodigo.onclick = async () => {
+
+    const user = auth.currentUser;
+
+    if (!user) {
+        alert("Sesión inválida");
+        return;
+    }
+
+    const code = giftCode.value.trim();
+
+    if (code === "INNOVATEC2026") {
+
+        try {
+            await updateDoc(doc(db, "users", user.uid), {
+                tipo: "PAGA"
+            });
+
+            alert("Pago exitoso 🎉");
+            modal.classList.add("hidden");
+
+            redirigirWhere();
+
+        } catch (error) {
+            console.error(error);
+            alert("Error al actualizar el plan");
+        }
+    } else {
+        alert("Código inválido");
+    }
+};
+
+
 
 btnPagar.onclick = () => {
     modal.classList.remove("hidden");
