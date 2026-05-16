@@ -312,24 +312,45 @@
      NAVBAR SCROLL
   ======================== */
   const navbar = document.querySelector('.navbar');
+  let scrollTicking = false;
+  let navbarScrolled = false;
+
+  function updateNavbarState() {
+    const shouldBeScrolled = window.scrollY > 40;
+    if (shouldBeScrolled !== navbarScrolled) {
+      navbarScrolled = shouldBeScrolled;
+      navbar.classList.toggle('scrolled', shouldBeScrolled);
+    }
+    scrollTicking = false;
+  }
+
   window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 40);
+    if (!scrollTicking) {
+      window.requestAnimationFrame(updateNavbarState);
+      scrollTicking = true;
+    }
   }, { passive: true });
 
   /* ========================
      SCROLL REVEAL
   ======================== */
   const revealEls = document.querySelectorAll('.reveal, .reveal-scale');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.12 });
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  revealEls.forEach(el => observer.observe(el));
+  if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+    revealEls.forEach(el => el.classList.add('is-visible'));
+  } else {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    revealEls.forEach(el => observer.observe(el));
+  }
 
   /* ========================
      CANVAS PARTÍCULAS
@@ -337,9 +358,20 @@
   (function() {
     const canvas = document.getElementById('particles-bg');
     if (!canvas) return;
+
+    const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const mobileQuery = window.matchMedia('(max-width: 768px)');
+
+    if (reduceMotionQuery.matches || mobileQuery.matches) {
+      canvas.remove();
+      return;
+    }
+
     const ctx = canvas.getContext('2d');
-    let W, H, particles = [];
-    const COUNT = 52;
+    let W, H, particles = [], rafId = null;
+    const COUNT = Math.min(36, Math.max(18, Math.round(window.innerWidth / 42)));
+    const MAX_DISTANCE = 120;
+    const MAX_DISTANCE_SQ = MAX_DISTANCE * MAX_DISTANCE;
     const PRIMARY = [37, 99, 235];
     const ACCENT  = [16, 185, 129];
 
@@ -353,10 +385,10 @@
       return {
         x: Math.random() * W,
         y: Math.random() * H,
-        r: Math.random() * 2.2 + 0.5,
-        dx: (Math.random() - 0.5) * 0.35,
-        dy: (Math.random() - 0.5) * 0.35,
-        alpha: Math.random() * 0.45 + 0.08,
+        r: Math.random() * 1.8 + 0.5,
+        dx: (Math.random() - 0.5) * 0.25,
+        dy: (Math.random() - 0.5) * 0.25,
+        alpha: Math.random() * 0.35 + 0.06,
         color
       };
     }
@@ -369,16 +401,17 @@
     function draw() {
       ctx.clearRect(0, 0, W, H);
 
-      // Líneas de conexión
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 130) {
+          const distSq = dx * dx + dy * dy;
+
+          if (distSq < MAX_DISTANCE_SQ) {
+            const dist = Math.sqrt(distSq);
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(37,99,235,${0.07 * (1 - dist / 130)})`;
-            ctx.lineWidth = 0.6;
+            ctx.strokeStyle = `rgba(37,99,235,${0.055 * (1 - dist / MAX_DISTANCE)})`;
+            ctx.lineWidth = 0.5;
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             ctx.stroke();
@@ -386,7 +419,6 @@
         }
       }
 
-      // Puntos
       particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -402,8 +434,21 @@
         if (p.y > H + 10) p.y = -10;
       });
 
-      requestAnimationFrame(draw);
+      rafId = window.requestAnimationFrame(draw);
     }
+
+    function stop() {
+      if (rafId) window.cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stop();
+      } else if (!rafId) {
+        draw();
+      }
+    });
 
     window.addEventListener('resize', resize, { passive: true });
     init();
