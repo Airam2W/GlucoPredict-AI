@@ -22,7 +22,7 @@ const bmiInput = document.getElementById("bmi");
 const glucoseInput = document.getElementById("glucose");
 const bpInput = document.getElementById("bp");
 const hba1cInput = document.getElementById("hba1c");
-const triglicéridosInput = document.getElementById("triglicéridos");
+const trigliceridosInput = document.getElementById("trigliceridos");
 const hdlInput = document.getElementById("hdl");
 const circunferencia_cinturaInput = document.getElementById("circunferencia_cintura");
 const familyInput = document.getElementById("family");
@@ -61,8 +61,8 @@ const validator = attachValidation(historialForm, {
     hba1c: {
         validate: (value) => validateRequiredNumber(value, "HbA1c", 3, 20)
     },
-    triglicéridos: {
-        validate: (value) => validateRequiredNumber(value, "triglicéridos", 10, 1000)
+    trigliceridos: {
+        validate: (value) => validateRequiredNumber(value, "trigliceridos", 10, 1000)
     },
     hdl: {
         validate: (value) => validateRequiredNumber(value, "HDL", 10, 150)
@@ -190,8 +190,8 @@ function actualizarInputs(datos) {
     if (datos.hba1c !== undefined && datos.hba1c !== null && datos.hba1c !== "") {
         hba1cInput.value = datos.hba1c;
     }
-    if (datos.triglicéridos !== undefined && datos.triglicéridos !== null && datos.triglicéridos !== "") {
-        triglicéridosInput.value = datos.triglicéridos;
+    if (datos.trigliceridos !== undefined && datos.trigliceridos !== null && datos.trigliceridos !== "") {
+        trigliceridosInput.value = datos.trigliceridos;
     }
     if (datos.hdl !== undefined && datos.hdl !== null && datos.hdl !== "") {
         hdlInput.value = datos.hdl;
@@ -343,7 +343,7 @@ historialForm.addEventListener("submit", async (e) => {
         hipertension: hypertensionInput.checked,
         actividad_fisica: activityInput.value,
         alcohol: alcoholInput.value,
-        triglicéridos: Number(triglicéridosInput.value),
+        trigliceridos: Number(trigliceridosInput.value),
         hdl: Number(hdlInput.value),
         circunferencia_cintura: Number(circunferencia_cinturaInput.value),
         updatedAt: new Date()
