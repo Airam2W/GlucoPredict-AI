@@ -7,8 +7,9 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 async function eliminarHistorialActual(rutaBase) {
-    await deleteDoc(doc(db, ...rutaBase, "historial_clinico", "actual"));
+    await deleteDoc(doc(db, ...rutaBase, "registro_clinico", "actual"));
 }
+
 
 export async function deletePacienteCompleto(userId, clinicaId, pacienteId) {
     await eliminarHistorialActual([

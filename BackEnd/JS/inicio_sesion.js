@@ -1,14 +1,15 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { signInWithEmailAndPassword } 
-  from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { signInWithEmailAndPassword }
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import { firebaseConfig } from "./configurationFirebase.js";
 import { db } from "./configurationFirebase.js";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const usoSelect = document.getElementById("uso");
 
 document.getElementById("googleLogin").addEventListener("click", async () => {
     const provider = new GoogleAuthProvider();
@@ -32,6 +33,7 @@ document.getElementById("googleLogin").addEventListener("click", async () => {
                 email: user.email,
                 nombre: user.displayName || "",
                 tipo: "GRATIS",
+                uso: usoSelect.value || "comun",
                 createdAt: new Date()
             });
 
@@ -52,12 +54,18 @@ document.getElementById("googleLogin").addEventListener("click", async () => {
                     email: user.email,
                     nombre: user.displayName || "",
                     tipo: "GRATIS",
+                    uso: usoSelect.value || "comun",
                     createdAt: new Date()
                 });
             }
 
-            // 👉 Ir directamente al panel
-            window.location.href = "FrontEnd/HTML/panel_principal.html";
+            // Si es uso: comun -> persona_dashboard, si es uso: medico -> medico_dashboard
+            const userData = snap.data();
+            if (userData.uso === "medico") {
+                window.location.href = "FrontEnd/HTML/medico_dashboard.html";
+            } else {
+                window.location.href = "FrontEnd/HTML/persona_dashboard.html";
+            }
         }
 
     } catch (error) {
@@ -66,17 +74,35 @@ document.getElementById("googleLogin").addEventListener("click", async () => {
     }
 });
 
-  document.getElementById("loginForm").addEventListener("submit", async e => {
+document.getElementById("loginForm").addEventListener("submit", async e => {
     e.preventDefault();
 
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
     try {
-      const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Usuario:", result.user);
-      window.location.href = "FrontEnd/HTML/panel_principal.html";
+        const result = await signInWithEmailAndPassword(auth, email, password);
+        const user = result.user;
+
+        // Obtener datos del usuario en Firestore
+        const userRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userRef);
+
+        if (snap.exists()) {
+            const userData = snap.data();
+
+            if (userData.uso === "medico") {
+                window.location.href = "FrontEnd/HTML/medico_dashboard.html";
+            } else {
+                window.location.href = "FrontEnd/HTML/persona_dashboard.html";
+            }
+        } else {
+            // Si no hay datos en Firestore, redirige al panel principal
+            window.location.href = "FrontEnd/HTML/persona_dashboard.html";
+        }
+
     } catch (err) {
+        console.error(err);
         alert("Credenciales incorrectas");
     }
 });

@@ -5,6 +5,7 @@ import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-
 const form = document.getElementById("registroForm");
 const emailInput = document.getElementById("emailInput");
 const passwordInput = document.getElementById("passwordInput");
+const usoSelect = document.getElementById("uso");
 
 if (form && emailInput && passwordInput) {
     const errorMsg = document.createElement("p");
@@ -35,6 +36,7 @@ if (form && emailInput && passwordInput) {
             await setDoc(doc(db, "users", cred.user.uid), {
                 email,
                 tipo: "GRATIS",
+                uso: usoSelect.value || "comun",
                 createdAt: new Date()
             });
 

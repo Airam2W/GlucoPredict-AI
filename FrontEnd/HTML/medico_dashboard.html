@@ -11,7 +11,11 @@
     <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/base.css">
 </head>
 <body>
-<img src="/GlucoPredict-AI/FrontEnd/img/logo.png" alt="Logo" class="corner-logo" onclick="window.location.href='../HTML/panel_principal.html'">
+<img src="/GlucoPredict-AI/FrontEnd/img/logo.png" alt="Logo" class="corner-logo" onclick="window.location.href='../HTML/medico_dashboard.html'">
+
+<button id="pagaButton" class="paga-btn">Actualizar a versión de paga</button>
+
+<button id="btnComun" class="switch-btn">Administrar mis Perfiles 👤</button>
 
 <h2>Mis clínicas</h2>
 
@@ -19,8 +23,9 @@
 
 <div class="page-actions compact-actions">
     <button id="btnAgregarClinica">Agregar clínica</button>
-    <button class="btn-ghost" onclick="window.location.href='panel_principal.html'">Volver al panel principal</button>
 </div>
+
+<button id="logoutBtn" class="logout-btn">Cerrar sesión</button>
 
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/medico_dashboard.js"></script>
 <script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>

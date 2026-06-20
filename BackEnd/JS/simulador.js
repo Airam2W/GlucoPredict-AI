@@ -111,9 +111,9 @@ const impacto = {};
 ----------------------------- */
 function getHistorialRef(user) {
     if (tipo === "paciente") {
-        return doc(db, "users", user.uid, "clinicas", clinica, "pacientes", id, "historial_clinico", "actual");
+        return doc(db, "users", user.uid, "clinicas", clinica, "pacientes", id, "registro_clinico", "actual");
     }
-    return doc(db, "users", user.uid, "perfiles", id, "historial_clinico", "actual");
+    return doc(db, "users", user.uid, "perfiles", id, "registro_clinico", "actual");
 }
 
 function getPersonaRef(user) {

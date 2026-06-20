@@ -10,60 +10,71 @@
     <script src="/GlucoPredict-AI/BackEnd/JS/theme.js"></script>
     <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/base.css">
 </head>
+
 <body>
-<img src="/GlucoPredict-AI/FrontEnd/img/logo.png" alt="Logo" class="corner-logo" onclick="window.location.href='../HTML/panel_principal.html'">
+    <img src="/GlucoPredict-AI/FrontEnd/img/logo.png" alt="Logo" class="corner-logo"
+        onclick="window.location.href='../HTML/persona_dashboard.html'">
 
-<h2>Perfil personal</h2>
+    <h2>Perfil personal</h2>
 
-<h3>Información personal</h3>
-<p>Nombre: <span id="nombrePerfil">-</span></p>
-<p>Edad: <span id="edadPerfil">-</span></p>
-<p>Sexo: <span id="sexoPerfil">-</span></p>
-<p>Peso: <span id="pesoPerfil">-</span></p>
-<p>Altura: <span id="alturaPerfil">-</span></p>
-<p>Teléfono: <span id="telefonoPerfil">-</span></p>
-<p>Correo: <span id="correoPerfil">-</span></p>
-<p>Antecedentes familiares de diabetes: <span id="antecedentesDiabetesPerfil">-</span></p>
-<p>Actividad física: <span id="actividadFisicaPerfil">-</span></p>
-<p>Observaciones: <span id="observacionesPerfil">-</span></p>
+    <h3>Información personal</h3>
+    <p><strong style="color: rgb(95, 95, 95);">Nombre:</strong> <span id="nombrePerfil">-</span></p>
+    <p><strong style="color: rgb(95, 95, 95);">Edad:</strong> <span id="edadPerfil">-</span></p>
+    <p><strong style="color: rgb(95, 95, 95);">Sexo:</strong> <span id="sexoPerfil">-</span></p>
+    <p><strong style="color: rgb(95, 95, 95);">Observaciones:</strong> <span id="observacionesPerfil">-</span></p>
 
-<h3>Historial clínico</h3>
-<p id="estadoHistorial">No registrado</p>
-<div class="page-actions compact-actions">
-    <button id="btnHistorial">Subir / Editar historial clínico</button>
-</div>
-
-<h3>Resultado de predicción</h3>
-<p id="fechaPrediccion" style="font-size: 12px; opacity: 0.9;"></p>
-<p>Riesgo estimado de Diabetes Tipo 2: <strong id="riesgoPrediccion">-</strong></p>
-<div id="explicacionesPrediccion" class="content-list">
-    <p class="explicacion-item">-</p>
-</div>
-<div id="recomendacionesPrediccion" class="content-list">
-    <p class="recomendacion-item">-</p>
-</div>
-
-<h3>Visualización del riesgo</h3>
-<div class="charts-container">
-    <div class="chart-card">
-        <canvas id="riesgoChart" width="300" height="300"></canvas>
+    <h3>Registro clínico</h3>
+    <p id="estadoHistorial">No registrado</p>
+    <div class="page-actions compact-actions">
+        <button id="btnHistorial">Subir / Editar registro clínico</button>
     </div>
-    <div class="chart-card factor-chart-card">
-        <canvas id="factoresChart" width="400" height="300"></canvas>
+
+    <h3>Resultado de predicción</h3>
+    <p id="fechaPrediccion" style="font-size: 12px; opacity: 0.9;"></p>
+    <p>
+        <strong style="color: rgb(90, 89, 89);" class="tooltipClinico">Riesgo Clínico:</strong>
+        <strong id="prediccionClinica" class="tooltipClinico">-</strong>
+    </p>
+    <p>
+        <strong style="color: rgb(90, 89, 89);" class="tooltipConductual">Riesgo Conductual:</strong>
+        <strong id="prediccionConductual" class="tooltipConductual">-</strong>
+    </p>
+    <div id="explicacionesPrediccion" class="content-list">
+        <p class="explicacion-item">-</p>
     </div>
-</div>
+    <div id="recomendacionesPrediccion" class="content-list">
+        <p class="recomendacion-item">-</p>
+    </div>
 
-<h3>Simulación de recomendaciones</h3>
-<p><em>Este resultado es solo informativo y no sustituye la opinión médica.</em></p>
-<div class="page-actions">
-    <button id="btnSimular">Simular evolución del riesgo</button>
-    <button id="btnEditarPerfil">Editar perfil</button>
-    <button id="btnEliminarPerfil" class="danger-button">Eliminar perfil</button>
-    <button id="btnVolver" class="btn-ghost">Volver a mi panel</button>
-</div>
+    <h3>Visualización del riesgo</h3>
+    <div class="charts-container">
+        <div class="chart-card">
+            <h3>Impacto de Factores Clínicos</h3><br>
+            <canvas id="radarChart"></canvas>
+        </div>
+        <div class="chart-card factor-chart-card">
+            <h3>Impacto de Factores Conductuales</h3><br>
+            <canvas id="riskBarChart"></canvas>
+        </div>
+    </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script type="module" src="/GlucoPredict-AI/BackEnd/JS/perfil_persona.js"></script>
-<script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>
+    <h3>Historial de predicciones</h3>
+    <div id="historialPredicciones"></div>
+
+    <br>
+
+
+    <p><em>Este resultado es solo informativo y no sustituye la opinión médica.</em></p>
+    <div class="page-actions">
+        <button id="btnSimular">Simular evolución del riesgo</button>
+        <button id="btnEditarPerfil">Editar perfil</button>
+        <button id="btnEliminarPerfil" class="danger-button">Eliminar perfil</button>
+        <button id="btnVolver" class="btn-ghost">Volver a mi panel</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="/GlucoPredict-AI/BackEnd/JS/perfil_persona.js"></script>
+    <script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>
 </body>
+
 </html>

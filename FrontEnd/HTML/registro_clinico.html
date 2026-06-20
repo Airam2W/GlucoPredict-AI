@@ -4,30 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Perfil</title>
+    <title>Registro Clínico</title>
     <link rel="icon" type="image/png" href="/GlucoPredict-AI/FrontEnd/img/logosolo.png">
+    <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/registro_clinico.css">
     <script src="/GlucoPredict-AI/BackEnd/JS/theme.js"></script>
     <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/base.css">
-    <link rel="stylesheet" href="/GlucoPredict-AI/FrontEnd/CSS/agregar_perfil.css">
 </head>
 
 <body>
 
-    <h2 id="tituloPerfil">Agregar perfil personal</h2>
+    <img src="/GlucoPredict-AI/FrontEnd/img/logo.png" alt="Logo" class="corner-logo"
+        onclick="window.location.href='../HTML/persona_dashboard.html'">
 
-    <form id="formPerfil" novalidate>
-        <h3>Información básica</h3><hr>
+    <h2>Registro Clínico</h2>
 
-        <label for="nombrePerfil">Nombre completo:</label><br>
-        <input type="text" id="nombrePerfil" placeholder="Nombre completo" required><br><br>
+    <p>
+        Ingrese la información clínica del paciente o cargue un archivo PDF.
+    </p>
 
-        <textarea id="observacionesPerfil" placeholder="Observaciones relevantes" rows="4"></textarea><br><br>
+    <hr>
+    <!--
+<h3>Subir registro clínico (PDF)</h3>
+<input type="file" id="pdfFile" accept="application/pdf">
+<p id="pdfStatus"></p>
+
+
+<hr>
+-->
+
+    <h3>Información clínica</h3>
+
+    <form id="registroForm" novalidate>
+
+        <label>Nombre completo:</label><br>
+        <input style="background-color: rgb(234, 234, 234);" type="text" id="name" disabled><br><br>
+
+        <hr>
 
         <h3>Opcionales (Muy recomendados)</h3>
         <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">
             Se recomienda mucho proporcionar los siguientes datos para mejorar la precisión de la predicción,
             pero <strong>no son obligatorios</strong>.
         </p>
+
+
+        <hr>
 
         <label>Glucosa en ayunas (mg/dL):</label><br>
         <input type="number" id="glucose"><br><br>
@@ -57,15 +78,19 @@
             más precisa será la predicción.
         </p>
 
+
         <label>Edad:</label><br>
         <input type="number" id="age"><br><br>
 
         <label>Sexo:</label><br>
         <select id="sex">
-            <option value="" selected>Selecciona una opción / Prefiero no responder</option>
+            <option value="" selected>Selecciona una opción</option>
             <option value="Masculino">Masculino</option>
             <option value="Femenino">Femenino</option>
         </select><br><br>
+
+        <label>Índice de Masa Corporal (IMC):</label><br>
+        <input type="number" id="bmi" step="0.1"><br><br>
 
         <label>Peso (kg):</label><br>
         <input type="number" id="peso" step="0.1"><br><br>
@@ -163,15 +188,23 @@
             <option value="7">Entre $75,000 y $112,500 MXN al mes</option>
             <option value="8">Más de $112,500 MXN al mes</option>
         </select><br><br>
-        <button type="submit" id="btnGuardarPerfil">Guardar perfil</button>
+
+        <hr>
+
+        <div class="page-actions compact-actions">
+            <button type="submit">Guardar registro clínico</button>
+            <button type="button" id="btnVolver">Volver a la predicción</button>
+        </div>
+
+
     </form>
 
-    <div class="page-actions compact-actions">
-        <button class="btn-ghost" onclick="window.location.href='persona_dashboard.html'">Volver</button>
-    </div>
+    <p id="saveStatus"></p>
 
-    <script type="module" src="/GlucoPredict-AI/BackEnd/JS/agregar_perfil.js"></script>
+    <script type="module" src="/GlucoPredict-AI/BackEnd/JS/registro_clinico.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script type="module" src="/GlucoPredict-AI/BackEnd/JS/auth-guard.js"></script>
+
 </body>
 
 </html>

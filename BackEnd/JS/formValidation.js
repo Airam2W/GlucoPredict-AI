@@ -173,9 +173,10 @@ export function validateInteger(value, label, min, max) {
     return "";
 }
 
-export function validateOptionalNumber(value, label, min, max) {
+export function validateOptionalNumber(value, label, { min, max }) {
     const trimmed = String(value || "").trim();
 
+    // Si está vacío, es opcional → no error
     if (!trimmed) {
         return "";
     }
@@ -184,12 +185,14 @@ export function validateOptionalNumber(value, label, min, max) {
     if (Number.isNaN(number)) {
         return `${label} debe ser un número válido.`;
     }
-    if (number < min || number > max) {
+
+    if (typeof min === "number" && number < min || typeof max === "number" && number > max) {
         return `${label} debe estar entre ${min} y ${max}.`;
     }
 
     return "";
 }
+
 
 export function validateRequiredNumber(value, label, min, max) {
     const trimmed = String(value || "").trim();

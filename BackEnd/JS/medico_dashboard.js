@@ -2,7 +2,7 @@ import { auth, db } from "./configurationFirebase.js";
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { deleteClinicaCompleta } from "./crud_helpers.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 import { MAX_CLINICAS } from "./restriccionesLicencia.js";
 
@@ -49,9 +49,41 @@ function crearItemClinica(user, clinicaId, clinica) {
     return li;
 }
 
+let desarrolloMedico = true;
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
         window.location.href = "../../index.html";
+        return;
+    }
+
+    if (desarrolloMedico) {
+        alert("El módulo de la sección para médicos está en desarrollo. ¡Próximamente!");
+        const user = auth.currentUser;
+        if (!user) {
+            console.error("No hay usuario autenticado");
+            return;
+        }
+
+        const userRef = doc(db, "users", user.uid);
+
+        try {
+            const userSnap = await getDoc(userRef);
+
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+
+                if (userData.uso === "medico") {
+                    await updateDoc(userRef, { uso: "comun" });
+                    window.location.href = "persona_dashboard.html";
+                } else {
+                    console.log("El usuario no es 'medico', no se actualiza");
+                }
+            } else {
+                console.log("No existe documento para este usuario en Firestore");
+            }
+        } catch (error) {
+            console.error("Error al actualizar usuario:", error);
+        }
         return;
     }
 
@@ -60,6 +92,20 @@ onAuthStateChanged(auth, async (user) => {
     const ref = collection(db, "users", user.uid, "clinicas");
     const snapshot = await getDocs(ref);
 
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists()) {
+        window.user = userSnap.data();
+        console.log("Usuario actual:", window.user);
+
+        if (window.user.tipo === "GRATIS") {
+            document.getElementById("pagaButton").style.display = "block";
+        }
+    } else {
+        console.log("No existe documento para este usuario en Firestore");
+    }
+
     const numeroClinicas = snapshot.size;
     console.log("Número de clínicas:", numeroClinicas);
 
@@ -67,12 +113,12 @@ onAuthStateChanged(auth, async (user) => {
         // Restringir acceso a características de usuario no PAGA
         const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
-        
+
         if (userSnap.exists()) {
             window.user = userSnap.data();
             console.log("Usuario actual:", window.user);
             console.log("Tipo de usuario:", window.user.tipo);
-            
+
             if (window.user.tipo !== "PAGA") {
                 btnAgregarClinica.title = "Solo disponible máximo 1 clínica para usuarios no PAGA. Actualiza a PAGA para agregar más.";
                 btnAgregarClinica.style.backgroundColor = "var(--disabled-bg)";
@@ -87,7 +133,7 @@ onAuthStateChanged(auth, async (user) => {
                         console.log("El usuario decidió no ir a la página de pago");
                     }
                 };
-                
+
             }
         } else {
             console.log("No existe documento para este usuario en Firestore");
@@ -108,3 +154,38 @@ onAuthStateChanged(auth, async (user) => {
 btnAgregarClinica.onclick = () => {
     window.location.href = "agregar_clinica.html";
 }
+
+document.getElementById("logoutBtn").onclick = () => auth.signOut();
+
+document.getElementById("btnComun").onclick = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+        console.error("No hay usuario autenticado");
+        return;
+    }
+
+    const userRef = doc(db, "users", user.uid);
+
+    try {
+        const userSnap = await getDoc(userRef);
+
+        if (userSnap.exists()) {
+            const userData = userSnap.data();
+
+            if (userData.uso === "medico") {
+                await updateDoc(userRef, { uso: "comun" });
+                window.location.href = "persona_dashboard.html";
+            } else {
+                console.log("El usuario no es 'medico', no se actualiza");
+            }
+        } else {
+            console.log("No existe documento para este usuario en Firestore");
+        }
+    } catch (error) {
+        console.error("Error al actualizar usuario:", error);
+    }
+};
+
+
+document.getElementById("pagaButton").onclick = () =>
+    window.location.href = "../../FrontEnd/HTML/paga.html?where=clinicas";

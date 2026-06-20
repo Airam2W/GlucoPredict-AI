@@ -18,7 +18,7 @@ export const clinicaId = params.get("clinica");
 
 if (!pacienteId || !clinicaId) {
     alert("Paciente o clínica no válidos");
-    window.location.href = "panel_principal.html";
+    window.location.href = "medico_dashboard.html";
 }
 
 const nombreEl = document.getElementById("nombrePaciente");
@@ -316,7 +316,7 @@ onAuthStateChanged(auth, async (user) => {
             "users", user.uid,
             "clinicas", clinicaId,
             "pacientes", pacienteId,
-            "historial_clinico", "actual"
+            "registro_clinico", "actual"
         );
 
         const historialSnap = await getDoc(historialRef);
@@ -522,7 +522,7 @@ export function mostrarPrediccion(riesgo, explicaciones, recomendaciones, metric
 
 
 btnHistorial.onclick = () => {
-    window.location.href = `historial_clinico.html?tipo=paciente&clinica=${clinicaId}&id=${pacienteId}`;
+    window.location.href = `registro_clinico.html?tipo=paciente&clinica=${clinicaId}&id=${pacienteId}`;
 };
 
 btnVolver.onclick = () => {

@@ -277,7 +277,7 @@ li a:hover{
 }
 
 .chart-card{
-  width: min(100%, 280px);
+  width: min(100%, 340px);
   min-height: 240px;
   padding: 20px;
   background: var(--card);

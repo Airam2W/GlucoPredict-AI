@@ -127,12 +127,6 @@ function redirigirWhere() {
     // -----------------------------
     if (where === "registro") {
        window.location.href = "../../index.html";
-    } else if (where === "servicio") {
-        window.location.href = "../../FrontEnd/HTML/panel_principal.html";
-    } else if (where === "boton") {
-        window.location.href = "../../FrontEnd/HTML/panel_principal.html";
-    } else if (where === "paciente") {
-        window.location.href = "../../FrontEnd/HTML/panel_principal.html";
     } else if (where === "perfil") {
         window.location.href = "../../FrontEnd/HTML/perfil_persona.html";
     } else if (where === "clinicas") {

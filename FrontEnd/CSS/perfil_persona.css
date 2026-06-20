@@ -1,32 +1,38 @@
-body{
+body {
   min-height: 100vh;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   padding: 32px 16px;
   gap: 14px;
 }
 
-h2{ margin:0; color: var(--primary); text-align:center; }
+h2 {
+  margin: 0;
+  color: var(--primary);
+  text-align: center;
+}
 
-h3{
+h3 {
   margin: 0;
   width: min(720px, 100%);
-  text-align:left;
+  text-align: left;
   color: var(--text);
 }
 
-p{
+p {
   width: min(720px, 100%);
-  text-align:left;
-  margin:0;
+  text-align: left;
+  margin: 0;
   color: var(--muted);
 }
 
-strong{ color: var(--primary); }
+strong {
+  color: var(--primary);
+}
 
-button{
+button {
   width: min(720px, 100%);
 }
 
@@ -38,7 +44,7 @@ button{
   justify-content: center;
 }
 
-.explicacion-item{
+.explicacion-item {
   background: var(--card);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -52,6 +58,7 @@ button{
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
 }
+
 .recomendacion-item {
   background: var(--card);
   backdrop-filter: var(--glass-blur);
@@ -70,4 +77,76 @@ button{
 #explicacionesPrediccion,
 #recomendacionesPrediccion {
   margin-top: 0;
+}
+
+#historialPredicciones {
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid var(--inline-border);
+  padding: 5px;
+  width: 58%;
+  background-color: white;
+  border-radius: 6px;
+}
+
+@media (max-width: 900px) {
+  #historialPredicciones {
+    width: 95%;
+  }
+}
+
+.tooltipClinico {
+  position: relative;
+  cursor: help;
+}
+
+.tooltipClinico::after {
+  content: "Este valor muestra tus resultados médicos para ver si estás dentro de lo saludable o si hay riesgo.";
+  position: absolute;
+  white-space: pre-line;
+  bottom: 125%;
+  /* arriba del texto */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111827;
+  color: #f9fafb;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.tooltipClinico:hover::after {
+  opacity: 1;
+}
+
+.tooltipConductual {
+  position: relative;
+  cursor: help;
+}
+
+.tooltipConductual::after {
+  content: "Este valor refleja tus hábitos de vida. Indica cómo tus costumbres afectan tu salud.";
+  white-space: pre-line;
+  position: absolute;
+  bottom: 125%;
+  /* arriba del texto */
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111827;
+  color: #f9fafb;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.tooltipConductual:hover::after {
+  opacity: 1;
 }
