@@ -1,7 +1,7 @@
 import { auth, db } from "./configurationFirebase.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { prediccionClinica, prediccionConductual, obtenerMetricas } from "./prediccion.js";
+import { prediccionClinica, prediccionConductual, obtenerMetricas, obtenerEYRA } from "./prediccion.js";
 import { deletePerfilCompleto } from "./crud_helpers.js";
 import {
     collection,
@@ -27,8 +27,10 @@ const observacionesEl = document.getElementById("observacionesPerfil");
 const historialEl = document.getElementById("estadoHistorial");
 const prediccionClinicaEl = document.getElementById("prediccionClinica");
 const prediccionConductualEl = document.getElementById("prediccionConductual");
-//const explicacionesEl = document.getElementById("explicacionesPrediccion");
-//const recomendacionesEl = document.getElementById("recomendacionesPrediccion");
+const analisisEl = document.getElementById("analisisTexto");
+const mensajeEl = document.getElementById("mensaje");
+const explicacionesEl = document.getElementById("explicacionesPrediccion");
+const recomendacionesEl = document.getElementById("recomendacionesPrediccion");
 const btnHistorial = document.getElementById("btnHistorial");
 const btnSimular = document.getElementById("btnSimular");
 const btnEditarPerfil = document.getElementById("btnEditarPerfil");
@@ -138,6 +140,10 @@ window.addEventListener("glucopredict-theme-change", () => {
 });
 
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function obtenerNuevaPrediccion(historial) {
     try {
         const timeout = new Promise((_, reject) =>
@@ -148,11 +154,15 @@ async function obtenerNuevaPrediccion(historial) {
             (async () => {
                 const predictClinica = await prediccionClinica(historial.clinico);
                 const predictConductual = await prediccionConductual(historial.conductual);
-                //const explicaciones = await obtenerExplicacionesGeneral(historial);
-                //const recomendaciones = await obtenerRecomendaciones(historial);
+                await sleep(500);
+                const eyra = await obtenerEYRA(historial);
+                const analisis = eyra.analisis || ["Error"];
+                const explicaciones = eyra.explicaciones || ["Error"];
+                const recomendaciones = eyra.recomendaciones || ["Error"];
+                await sleep(500);
                 const metricas = await obtenerMetricas(historial);
 
-                return { predictClinica, predictConductual, metricas };
+                return { predictClinica, predictConductual, analisis, explicaciones, recomendaciones, metricas, historialSnapshot: historial };
             })(),
             timeout
         ]);
@@ -198,16 +208,16 @@ export function crearGraficas(metricas) {
                     beginAtZero: true,
                     suggestedMax: Math.max(...metricas.radar.values.map(v => v.value || 0)) + 20,
                     ticks: {
-                        color: "#374151", // gris moderno
+                        color: isDarkTheme() ? "#d8d8d8" : "#374151", // gris moderno
                         font: { size: 14, family: "Inter, sans-serif" }
                     },
                     grid: {
-                        color: "#e5e7eb" // líneas suaves
+                        color: isDarkTheme() ? "#374151" : "#e5e7eb" // líneas suaves
                     }
                 },
                 x: {
                     ticks: {
-                        color: "#374151",
+                        color: isDarkTheme() ? "#d8d8d8" : "#374151",
                         font: { size: 14, family: "Inter, sans-serif" }
                     },
                     grid: { display: false }
@@ -227,7 +237,7 @@ export function crearGraficas(metricas) {
                 },
                 legend: {
                     labels: {
-                        color: "#374151",
+                        color: isDarkTheme() ? "#d8d8d8" : "#374151",
                         font: { size: 14, family: "Inter, sans-serif" }
                     }
                 }
@@ -283,14 +293,14 @@ export function crearGraficas(metricas) {
                     max: 3,
                     ticks: {
                         callback: v => ["", "Bajo", "Medio", "Alto"][v],
-                        color: "#374151",
+                        color: isDarkTheme() ? "#d8d8d8" : "#374151",
                         font: { size: 14, family: "Inter, sans-serif" }
                     },
-                    grid: { color: "#e5e7eb" }
+                    grid: { color: isDarkTheme() ? "#374151" : "#e5e7eb" }
                 },
                 y: {
                     ticks: {
-                        color: "#374151",
+                        color: isDarkTheme() ? "#d8d8d8" : "#374151",
                         font: { size: 14, family: "Inter, sans-serif" }
                     },
                     grid: { display: false }
@@ -300,293 +310,308 @@ export function crearGraficas(metricas) {
     });
 }
 
+function isDarkTheme() {
+    return document.documentElement.getAttribute("data-theme") === "dark";
+}
+
 function textoSeguro(valor, sufijo = "") {
-            if (valor === null || valor === undefined || valor === "") {
-                return "-";
-            }
-            return `${valor}${sufijo}`;
-        }
+    if (valor === null || valor === undefined || valor === "") {
+        return "-";
+    }
+    return `${valor}${sufijo}`;
+}
 
 onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                window.location.href = "../../index.html";
+    if (!user) {
+        window.location.href = "../../index.html";
+        return;
+    }
+
+    // Restringir acceso a características de usuario no PAGA
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (userSnap.exists()) {
+        window.user = userSnap.data();
+        console.log("Usuario actual:", window.user);
+        console.log("Tipo de usuario:", window.user.tipo);
+
+        if (window.user.tipo !== "PAGA") {
+            btnSimular.title = "Solo disponible para usuarios PAGA";
+            btnSimular.style.backgroundColor = "var(--disabled-bg)";
+            btnSimular.style.cursor = "not-allowed";
+            btnSimular.onclick = () => {
+                const respuesta = confirm("Simulador solo disponible para usuarios PAGA. ¿Deseas ir a la página de pago?");
+                if (respuesta) {
+                    // El usuario presionó "Aceptar"
+                    window.location.href = "../../FrontEnd/HTML/paga.html?where=paciente";
+                } else {
+                    // El usuario presionó "Cancelar"
+                    console.log("El usuario decidió no ir a la página de pago");
+                }
+            };
+        }
+
+        // SIMULADOR DESHABILITADO POR EL MOMENTO
+        btnSimular.title = "Simulador en desarrollo";
+        btnSimular.style.backgroundColor = "var(--disabled-bg)";
+        btnSimular.style.cursor = "not-allowed";
+        btnSimular.onclick = () => {
+            alert("El simulador está en desarrollo. ¡Próximamente!");
+        }
+    } else {
+        console.log("No existe documento para este usuario en Firestore");
+    }
+
+    try {
+        const perfilRef = doc(db, "users", user.uid, "perfiles", perfilId);
+        const perfilSnap = await getDoc(perfilRef);
+
+        if (!perfilSnap.exists()) {
+            alert("Perfil no encontrado");
+            return;
+        }
+
+        const perfil = perfilSnap.data();
+
+        nombreEl.innerText = textoSeguro(perfil.nombre);
+        edadEl.innerText = textoSeguro(perfil.edad, " años");
+        sexoEl.innerText = textoSeguro(perfil.sexo);
+        observacionesEl.innerText = perfil.observaciones || "Sin observaciones";
+
+        const historialRef = doc(db, "users", user.uid, "perfiles", perfilId, "registro_clinico", "actual");
+        const historialSnap = await getDoc(historialRef);
+
+        if (!historialSnap.exists()) {
+            historialEl.innerText = "No registrado ⏳";
+            prediccionClinicaEl.innerText = "-";
+            prediccionConductualEl.innerText = "-";
+        } else {
+            historialEl.innerText = "Registrado ✅";
+
+            const historial = historialSnap.data();
+
+
+            const prediccionesRef = collection(
+                db,
+                "users", user.uid,
+                "perfiles", perfilId,
+                "predicciones"
+            );
+
+            const q = query(prediccionesRef, orderBy("fecha", "desc"), limit(1));
+            const snapshot = await getDocs(q);
+
+            let ultimaPrediccion = null;
+
+            if (!snapshot.empty) {
+                ultimaPrediccion = snapshot.docs[0].data();
+
+                // Mostrar inmediatamente ⚡
+                mostrarPrediccion(
+                    ultimaPrediccion.predictClinica,
+                    ultimaPrediccion.predictConductual,
+                    ultimaPrediccion.analisis,
+                    ultimaPrediccion.explicaciones,
+                    ultimaPrediccion.recomendaciones,
+                    ultimaPrediccion.metricas,
+                    ultimaPrediccion.fecha
+                );
+
+                //crearGraficas(ultimaPrediccion.metricas);
+
+                // Mostrar historial de predicciones
+                const historialQ = query(prediccionesRef, orderBy("fecha", "desc"));
+                const historialSnapshot = await getDocs(historialQ);
+
+                let predicciones = historialSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                renderHistorialPredicciones(predicciones);
+                console.log("Numero de predicciones en historial:", predicciones.length);
+            }
+
+            // Mostrar skeleton loaders mientras carga
+            if (!ultimaPrediccion) {
+                prediccionClinicaEl.innerHTML = '<span class="spinner-loader"></span>';
+                prediccionConductualEl.innerHTML = '<span class="spinner-loader"></span>';
+                analisisEl.innerHTML = '<p class="analisis-item"><span class="spinner-loader"></span> Analizando datos clínicos y conductuales...</p>';
+                explicacionesEl.innerHTML = '<p class="explicacion-item"><span class="spinner-loader"></span> Analizando datos clínicos y buscando patrones...</p>';
+                recomendacionesEl.innerHTML = '<p class="recomendacion-item"><span class="spinner-loader"></span> Generando plan de acción personalizado...</p>';
+            }
+            const nueva = await obtenerNuevaPrediccion(historial);
+
+            console.log("Predicción obtenida:", nueva);
+
+            if (!nueva) {
+                // Si ya hay predicción previa, no hacer nada
+                if (!ultimaPrediccion) {
+                    prediccionClinicaEl.innerText = "No se pudo obtener predicción. Intenta actualizar la página más tarde.";
+                    prediccionConductualEl.innerText = "No se pudo obtener predicción. Intenta actualizar la página más tarde.";
+                }
                 return;
             }
 
-            // Restringir acceso a características de usuario no PAGA
-            const userRef = doc(db, "users", user.uid);
-            const userSnap = await getDoc(userRef);
+            // Si NO hay predicción previa
+            if (!ultimaPrediccion) {
 
-            if (userSnap.exists()) {
-                window.user = userSnap.data();
-                console.log("Usuario actual:", window.user);
-                console.log("Tipo de usuario:", window.user.tipo);
+                mostrarPrediccion(
+                    nueva.predictClinica,
+                    nueva.predictConductual,
+                    nueva.analisis,
+                    nueva.explicaciones,
+                    nueva.recomendaciones,
+                    nueva.metricas,
+                    { seconds: Date.now() / 1000 }
+                );
 
-                if (window.user.tipo !== "PAGA") {
-                    btnSimular.title = "Solo disponible para usuarios PAGA";
-                    btnSimular.style.backgroundColor = "var(--disabled-bg)";
-                    btnSimular.style.cursor = "not-allowed";
-                    btnSimular.onclick = () => {
-                        const respuesta = confirm("Simulador solo disponible para usuarios PAGA. ¿Deseas ir a la página de pago?");
-                        if (respuesta) {
-                            // El usuario presionó "Aceptar"
-                            window.location.href = "../../FrontEnd/HTML/paga.html?where=paciente";
-                        } else {
-                            // El usuario presionó "Cancelar"
-                            console.log("El usuario decidió no ir a la página de pago");
-                        }
-                    };
-                }
+                //crearGraficas(nueva.metricas);
 
-                // SIMULADOR DESHABILITADO POR EL MOMENTO
-                btnSimular.title = "Simulador en desarrollo";
-                btnSimular.style.backgroundColor = "var(--disabled-bg)";
-                btnSimular.style.cursor = "not-allowed";
-                btnSimular.onclick = () => {
-                    alert("El simulador está en desarrollo. ¡Próximamente!");
-                }
+                await addDoc(prediccionesRef, {
+                    ...nueva,
+                    fecha: new Date()
+                });
+
             } else {
-                console.log("No existe documento para este usuario en Firestore");
-            }
 
-            try {
-                const perfilRef = doc(db, "users", user.uid, "perfiles", perfilId);
-                const perfilSnap = await getDoc(perfilRef);
+                // Comparar
+                const cambio =
+                    nueva.historialSnapshot.clinico !== ultimaPrediccion.historialSnapshot.clinico ||
+                    nueva.historialSnapshot.conductual !== ultimaPrediccion.historialSnapshot.conductual;
 
-                if (!perfilSnap.exists()) {
-                    alert("Perfil no encontrado");
-                    return;
-                }
-
-                const perfil = perfilSnap.data();
-
-                nombreEl.innerText = textoSeguro(perfil.nombre);
-                edadEl.innerText = textoSeguro(perfil.edad, " años");
-                sexoEl.innerText = textoSeguro(perfil.sexo);
-                observacionesEl.innerText = perfil.observaciones || "Sin observaciones";
-
-                const historialRef = doc(db, "users", user.uid, "perfiles", perfilId, "registro_clinico", "actual");
-                const historialSnap = await getDoc(historialRef);
-
-                if (!historialSnap.exists()) {
-                    historialEl.innerText = "No registrado";
-                    prediccionClinicaEl.innerText = "-";
-                    prediccionConductualEl.innerText = "-";
-                } else {
-                    historialEl.innerText = "Registrado";
-
-                    const historial = historialSnap.data();
-
-
-                    const prediccionesRef = collection(
-                        db,
-                        "users", user.uid,
-                        "perfiles", perfilId,
-                        "predicciones"
+                if (cambio) {
+                    mostrarPrediccion(
+                        nueva.predictClinica,
+                        nueva.predictConductual,
+                        nueva.analisis,
+                        nueva.explicaciones,
+                        nueva.recomendaciones,
+                        nueva.metricas,
+                        { seconds: Date.now() / 1000 }
                     );
 
-                    const q = query(prediccionesRef, orderBy("fecha", "desc"), limit(1));
-                    const snapshot = await getDocs(q);
-
-                    let ultimaPrediccion = null;
-
-                    if (!snapshot.empty) {
-                        ultimaPrediccion = snapshot.docs[0].data();
-
-                        // Mostrar inmediatamente ⚡
-                        mostrarPrediccion(
-                            ultimaPrediccion.predictClinica,
-                            ultimaPrediccion.predictConductual,
-                            ultimaPrediccion.metricas,
-                            ultimaPrediccion.fecha
-                        );
-
-                        crearGraficas(ultimaPrediccion.metricas);
-
-                        // Mostrar historial de predicciones
-                        const historialQ = query(prediccionesRef, orderBy("fecha", "desc"));
-                        const historialSnapshot = await getDocs(historialQ);
-
-                        let predicciones = historialSnapshot.docs.map(doc => ({
-                            id: doc.id,
-                            ...doc.data()
-                        }));
-
-                        renderHistorialPredicciones(predicciones);
-                        console.log("Numero de predicciones en historial:", predicciones.length);
-                    }
-
-                    // Mostrar skeleton loaders mientras carga
-                    if (!ultimaPrediccion) {
-                        prediccionClinicaEl.innerHTML = '<span class="spinner-loader"></span>';
-                        prediccionConductualEl.innerHTML = '<span class="spinner-loader"></span>';
-                        //explicacionesEl.innerHTML = '<p class="explicacion-item"><span class="spinner-loader"></span> Analizando datos clínicos y buscando patrones...</p>';
-                        //recomendacionesEl.innerHTML = '<p class="recomendacion-item"><span class="spinner-loader"></span> Generando plan de acción personalizado...</p>';
-                    }
-                    const nueva = await obtenerNuevaPrediccion(historial);
-
-                    console.log("Predicción obtenida:", nueva);
-
-                    if (!nueva) {
-                        // Si ya hay predicción previa, no hacer nada
-                        if (!ultimaPrediccion) {
-                            prediccionClinicaEl.innerText = "No se pudo obtener predicción. Intenta actualizar la página más tarde.";
-                            prediccionConductualEl.innerText = "No se pudo obtener predicción. Intenta actualizar la página más tarde.";
-                        }
-                        return;
-                    }
-
-                    // Si NO hay predicción previa
-                    if (!ultimaPrediccion) {
-
-                        mostrarPrediccion(
-                            nueva.predictClinica,
-                            nueva.predictConductual,
-                            nueva.metricas,
-                            { seconds: Date.now() / 1000 }
-                        );
-
-                        crearGraficas(nueva.metricas);
-
-                        await addDoc(prediccionesRef, {
-                            ...nueva,
-                            historialSnapshot: historial, // 🔥 CLAVE
-                            fecha: new Date()
-                        });
-
-                    } else {
-
-                        // Comparar
-                        const cambio =
-                            nueva.predictClinica !== ultimaPrediccion.predictClinica ||
-                            nueva.predictConductual !== ultimaPrediccion.predictConductual;
-                        //JSON.stringify(nueva.explicaciones) !== JSON.stringify(ultimaPrediccion.explicaciones) ||
-                        //JSON.stringify(nueva.recomendaciones) !== JSON.stringify(ultimaPrediccion.recomendaciones);
-
-                        if (cambio) {
-                            mostrarPrediccion(
-                                nueva.predictClinica,
-                                nueva.predictConductual,
-                                nueva.metricas,
-                                { seconds: Date.now() / 1000 }
-                            );
-
-                            crearGraficas(nueva.metricas);
-
-                            await addDoc(prediccionesRef, {
-                                ...nueva,
-                                historialSnapshot: historial, // 🔥 CLAVE
-                                fecha: new Date()
-                            });
-                        }
-                    }
-
-
-
-                    /*
-                    const explicaciones = await obtenerExplicacionesGeneral(historial);
-                    explicacionesEl.innerHTML = "";
-                    explicaciones.forEach((explicacion) => {
-                        const p = document.createElement("p");
-                        p.classList.add("explicacion-item");
-                        p.innerText = `🔍 Análisis: ${explicacion}`;
-                        explicacionesEl.appendChild(p);
+                    await addDoc(prediccionesRef, {
+                        ...nueva,
+                        fecha: new Date()
                     });
-        
-                    const recomendaciones = await obtenerRecomendaciones(historial);
-                    recomendacionesEl.innerHTML = "";
-                    recomendaciones.forEach((recomendacion) => {
-                        const p = document.createElement("p");
-                        p.classList.add("recomendacion-item");
-                        p.innerText = `💡 Recomendación: ${recomendacion}`;
-                        recomendacionesEl.appendChild(p);
-                    });
-                    */
-
-                    crearGraficas(nueva.metricas);
-
                 }
-
-                btnEliminarPerfil.onclick = async () => {
-                    const confirmado = window.confirm(`¿Eliminar el perfil ${perfil.nombre || "seleccionado"}?`);
-                    if (!confirmado) {
-                        return;
-                    }
-
-                    await deletePerfilCompleto(user.uid, perfilId);
-                    window.location.href = "persona_dashboard.html";
-                };
-            } catch (error) {
-                console.error("Error cargando perfil:", error);
-                alert("Error al cargar el perfil");
-            }
-        });
-
-
-    export function mostrarPrediccion(prediccionClinica, prediccionConductual, metricas, fecha) {
-
-        // Predicción clínica
-        if (prediccionClinica < 30) {
-            prediccionClinicaEl.innerText = `${prediccionClinica}% (Bajo)`;
-            prediccionClinicaEl.style.color = "#4CAF50";
-        } else if (prediccionClinica < 60) {
-            prediccionClinicaEl.innerText = `${prediccionClinica}% (Moderado)`;
-            prediccionClinicaEl.style.color = "#FFC107";
-        } else {
-            prediccionClinicaEl.innerText = `${prediccionClinica}% (Alto)`;
-            prediccionClinicaEl.style.color = "#F44336";
-        }
-
-        // Predicción conductual
-        if (prediccionConductual < 30) {
-            prediccionConductualEl.innerText = `${prediccionConductual}% (Bajo)`;
-            prediccionConductualEl.style.color = "#4CAF50";
-        } else if (prediccionConductual < 60) {
-            prediccionConductualEl.innerText = `${prediccionConductual}% (Moderado)`;
-            prediccionConductualEl.style.color = "#FFC107";
-        } else {
-            prediccionConductualEl.innerText = `${prediccionConductual}% (Alto)`;
-            prediccionConductualEl.style.color = "#F44336";
-        }
-
-        // Fecha
-        if (fecha) {
-            let fechaObj;
-
-            // 🔥 Timestamp Firestore
-            if (typeof fecha.toDate === "function") {
-                fechaObj = fecha.toDate();
-            }
-            // 🔥 Objeto con seconds
-            else if (fecha.seconds) {
-                fechaObj = new Date(fecha.seconds * 1000);
-            }
-            // 🔥 Date normal o string
-            else {
-                fechaObj = new Date(fecha);
             }
 
-            fechaPrediccionEl.innerText =
-                "Última predicción: " + fechaObj.toLocaleString();
         }
 
-        if (metricas) {
-            crearGraficas(metricas);
-        }
+        btnEliminarPerfil.onclick = async () => {
+            const confirmado = window.confirm(`¿Eliminar el perfil ${perfil.nombre || "seleccionado"}?`);
+            if (!confirmado) {
+                return;
+            }
+
+            await deletePerfilCompleto(user.uid, perfilId);
+            window.location.href = "persona_dashboard.html";
+        };
+    } catch (error) {
+        console.error("Error cargando perfil:", error);
+        alert("Error al cargar el perfil");
+    }
+});
+
+
+export function mostrarPrediccion(prediccionClinica, prediccionConductual, analisis, explicaciones, recomendaciones, metricas, fecha) {
+
+    // Predicción clínica
+    if (prediccionClinica < 30) {
+        prediccionClinicaEl.innerText = `${prediccionClinica}% (Bajo)`;
+        prediccionClinicaEl.style.color = "#4CAF50";
+        document.getElementById("iconoClinico").innerText = "🟢";
+    } else if (prediccionClinica < 60) {
+        prediccionClinicaEl.innerText = `${prediccionClinica}% (Moderado)`;
+        prediccionClinicaEl.style.color = "#FFC107";
+        document.getElementById("iconoClinico").innerText = "🟡";
+    } else {
+        prediccionClinicaEl.innerText = `${prediccionClinica}% (Alto)`;
+        prediccionClinicaEl.style.color = "#F44336";
+        document.getElementById("iconoClinico").innerText = "🔴";
     }
 
-    btnHistorial.onclick = () => {
-        window.location.href = `registro_clinico.html?tipo=perfil&id=${perfilId}`;
-    };
+    // Predicción conductual
+    if (prediccionConductual < 30) {
+        prediccionConductualEl.innerText = `${prediccionConductual}% (Bajo)`;
+        prediccionConductualEl.style.color = "#4CAF50";
+        document.getElementById("iconoConductual").innerText = "🟢";
+    } else if (prediccionConductual < 60) {
+        prediccionConductualEl.innerText = `${prediccionConductual}% (Moderado)`;
+        prediccionConductualEl.style.color = "#FFC107";
+        document.getElementById("iconoConductual").innerText = "🟡";
+    } else {
+        prediccionConductualEl.innerText = `${prediccionConductual}% (Alto)`;
+        prediccionConductualEl.style.color = "#F44336";
+        document.getElementById("iconoConductual").innerText = "🔴";
+    }
 
-    btnSimular.onclick = () => {
-        window.location.href = `simulador.html?tipo=perfil&id=${perfilId}`;
-    };
+    // Analisis
+    analisisEl.innerHTML = "";
+    analisisEl.innerText = analisis;
+    mensajeEl.innerText = "Este análisis es informativo y no sustituye la valoración de un médico.\nPor favor, consulta a un profesional de la salud para obtener un diagnóstico y tratamiento adecuado.";
 
-    btnVolver.onclick = () => {
-        window.location.href = "persona_dashboard.html";
-    };
 
-    btnEditarPerfil.onclick = () => {
-        window.location.href = `agregar_perfil.html?id=${perfilId}`;
-    };
+    // Explicaciones
+    explicacionesEl.innerHTML = "";
+    explicaciones.forEach((explicacion) => {
+        const p = document.createElement("p");
+        p.classList.add("explicacion-item");
+        p.innerText = `${explicacion}`;
+        explicacionesEl.appendChild(p);
+    });
+
+
+    // Recomendaciones
+    recomendacionesEl.innerHTML = "";
+    recomendaciones.forEach((recomendacion) => {
+        const p = document.createElement("p");
+        p.classList.add("recomendacion-item");
+        p.innerText = `${recomendacion}`;
+        recomendacionesEl.appendChild(p);
+    });
+
+    // Fecha
+    if (fecha) {
+        let fechaObj;
+
+        // 🔥 Timestamp Firestore
+        if (typeof fecha.toDate === "function") {
+            fechaObj = fecha.toDate();
+        }
+        // 🔥 Objeto con seconds
+        else if (fecha.seconds) {
+            fechaObj = new Date(fecha.seconds * 1000);
+        }
+        // 🔥 Date normal o string
+        else {
+            fechaObj = new Date(fecha);
+        }
+
+        fechaPrediccionEl.innerText =
+            "Última predicción: " + fechaObj.toLocaleString();
+    }
+
+    if (metricas) {
+        crearGraficas(metricas);
+    }
+}
+
+btnHistorial.onclick = () => {
+    window.location.href = `registro_clinico.html?tipo=perfil&id=${perfilId}`;
+};
+
+btnSimular.onclick = () => {
+    window.location.href = `simulador.html?tipo=perfil&id=${perfilId}`;
+};
+
+btnVolver.onclick = () => {
+    window.location.href = "persona_dashboard.html";
+};
+
+btnEditarPerfil.onclick = () => {
+    window.location.href = `agregar_perfil.html?id=${perfilId}`;
+};

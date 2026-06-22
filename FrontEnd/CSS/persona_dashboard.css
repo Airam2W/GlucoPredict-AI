@@ -141,3 +141,22 @@ ul#listaPerfiles li.perfil-card {
   align-items: center;
   gap: 16px;
 }
+
+
+html[data-theme="dark"] .perfil-header {
+  color: white;
+}
+
+html[data-theme="dark"] ul#listaPerfiles li.perfil-card {
+  display: block !important;
+  border: 1px solid #10272e;
+  border-radius: 8px;
+  margin: 12px 0;
+  padding: 12px;
+  background: #0D1A27;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+html[data-theme="dark"] ul#listaPerfiles{
+  border:#10272e;
+}

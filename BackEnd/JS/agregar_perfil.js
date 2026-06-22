@@ -146,6 +146,15 @@ function cargarFormulario(perfil) {
         h3s[2].style.display = "none";
     }
 
+     // Ocultar el primer y segundo p
+    const ps = document.getElementsByTagName("p");
+    if (ps.length > 0) {
+        ps[0].style.display = "none";
+    }
+    if (ps.length > 1) {
+        ps[1].style.display = "none";
+    }
+
 }
 
 onAuthStateChanged(auth, async (user) => {

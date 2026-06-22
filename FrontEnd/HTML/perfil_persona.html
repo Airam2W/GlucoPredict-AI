@@ -23,28 +23,51 @@
     <p><strong style="color: rgb(95, 95, 95);">Sexo:</strong> <span id="sexoPerfil">-</span></p>
     <p><strong style="color: rgb(95, 95, 95);">Observaciones:</strong> <span id="observacionesPerfil">-</span></p>
 
+    <hr>
+
     <h3>Registro clínico</h3>
-    <p id="estadoHistorial">No registrado</p>
+    <p id="estadoHistorial">No registrado ⏳</p>
     <div class="page-actions compact-actions">
         <button id="btnHistorial">Subir / Editar registro clínico</button>
     </div>
 
+    <hr>
+
     <h3>Resultado de predicción</h3>
-    <p id="fechaPrediccion" style="font-size: 12px; opacity: 0.9;"></p>
-    <p>
-        <strong style="color: rgb(90, 89, 89);" class="tooltipClinico">Riesgo Clínico:</strong>
-        <strong id="prediccionClinica" class="tooltipClinico">-</strong>
-    </p>
-    <p>
-        <strong style="color: rgb(90, 89, 89);" class="tooltipConductual">Riesgo Conductual:</strong>
-        <strong id="prediccionConductual" class="tooltipConductual">-</strong>
-    </p>
+    <p id="fechaPrediccion" style="font-size: 14px;"></p>
+    <div id="resultadoPredicciones"
+        style="display: flex; align-items: center; gap: 20px; background-color: #ffffff; padding: 20px; border-radius: 5px; width: 60%; border: 1px solid #ddd; margin-bottom: 20px;">
+        <p>
+            <strong style="color: rgb(90, 89, 89);" class="tooltipClinico">Riesgo Clínico:</strong>
+            <strong id="prediccionClinica">-</strong>
+            <span id="iconoClinico">-</span>
+        </p>
+        <p>
+            <strong style="color: rgb(90, 89, 89);" class="tooltipConductual">Riesgo Conductual:</strong>
+            <strong id="prediccionConductual">-</strong>
+            <span id="iconoConductual">-</span>
+        </p>
+    </div>
+
+    <hr>
+
+    <h4>📊 Lo que encontramos:</h4>
+    <div id="analisisPrediccion" class="content-list">
+        <p id="analisisTexto">-</p>
+        <p id="mensaje" style="font-size: 15px; color: #666; font-style: italic; text-align: center;"> - </p>
+    </div>
+
+    <h4>🔍 ¿Por qué se obtuvo este resultado?</h4>
     <div id="explicacionesPrediccion" class="content-list">
         <p class="explicacion-item">-</p>
     </div>
+
+    <h4>💡 Te recomendamos lo siguiente:</h4>
     <div id="recomendacionesPrediccion" class="content-list">
         <p class="recomendacion-item">-</p>
     </div>
+
+    <hr>
 
     <h3>Visualización del riesgo</h3>
     <div class="charts-container">
@@ -58,13 +81,13 @@
         </div>
     </div>
 
+    <hr>
+
     <h3>Historial de predicciones</h3>
     <div id="historialPredicciones"></div>
 
-    <br>
+    <p style="text-align: center;"><em>Este análisis es informativo y no sustituye la valoración de un médico.<br>Por favor, consulta a un profesional de la salud para obtener un diagnóstico y tratamiento adecuado.</em></p>
 
-
-    <p><em>Este resultado es solo informativo y no sustituye la opinión médica.</em></p>
     <div class="page-actions">
         <button id="btnSimular">Simular evolución del riesgo</button>
         <button id="btnEditarPerfil">Editar perfil</button>

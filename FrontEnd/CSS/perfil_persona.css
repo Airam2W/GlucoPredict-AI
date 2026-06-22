@@ -6,6 +6,7 @@ body {
   align-items: center;
   padding: 32px 16px;
   gap: 14px;
+  overflow-x: hidden !important;
 }
 
 h2 {
@@ -89,12 +90,6 @@ button {
   border-radius: 6px;
 }
 
-@media (max-width: 900px) {
-  #historialPredicciones {
-    width: 95%;
-  }
-}
-
 .tooltipClinico {
   position: relative;
   cursor: help;
@@ -149,4 +144,70 @@ button {
 
 .tooltipConductual:hover::after {
   opacity: 1;
+}
+
+h4 {
+  margin: 0;
+  width: min(720px, 100%);
+  text-align: left;
+  color: var(--text);
+}
+
+#analisisTexto {
+  color: var(--text);
+  background: var(--card);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  padding: 16px 20px;
+  border-left: 5px solid #f8a971;
+  border-radius: 16px;
+  font-size: 15px;
+  box-shadow: var(--shadow);
+  border-top: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+html[data-theme="dark"] #resultadoPredicciones{
+  background-color: #07131f !important;
+  border: 1px solid #10272e !important;
+}
+
+html[data-theme="dark"] .tooltipClinico {
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] .tooltipConductual {
+  color: #ffffff !important;
+}
+
+html[data-theme="dark"] #mensaje {
+  color: #d8d8d8 !important;
+}
+
+html[data-theme="dark"] #historialPredicciones {
+  background-color: #07131f !important;
+  border: 1px solid #10272e !important;
+}
+
+@media (max-width: 900px) {
+
+  body{
+    overflow-x: hidden !important;
+  }
+
+  #historialPredicciones {
+    width: 95%;
+  }
+
+  #resultadoPredicciones {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #themeToggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+  }
 }

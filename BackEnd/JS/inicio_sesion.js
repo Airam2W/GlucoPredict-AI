@@ -3,6 +3,7 @@ import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstati
 import { doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { signInWithEmailAndPassword }
     from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import { firebaseConfig } from "./configurationFirebase.js";
 import { db } from "./configurationFirebase.js";
@@ -10,6 +11,28 @@ import { db } from "./configurationFirebase.js";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const usoSelect = document.getElementById("uso");
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // Usuario ya autenticado, redirigir según su tipo
+        const userRef = doc(db, "users", user.uid);
+        getDoc(userRef).then(snap => {
+            if (snap.exists()) {
+                const userData = snap.data();
+                if (userData.uso === "medico") {
+                    window.location.href = "FrontEnd/HTML/medico_dashboard.html";
+                } else {
+                    window.location.href = "FrontEnd/HTML/persona_dashboard.html";
+                }
+            } else {
+                // Si no hay datos en Firestore, redirige al panel principal
+                window.location.href = "FrontEnd/HTML/persona_dashboard.html";
+            }
+        });
+    } else {
+        console.log("No hay usuario autenticado");
+    }
+});
 
 document.getElementById("googleLogin").addEventListener("click", async () => {
     const provider = new GoogleAuthProvider();

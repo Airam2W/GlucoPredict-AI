@@ -19,6 +19,10 @@ h3{
   margin-bottom: -8px;
 }
 
+input{
+  
+}
+
 form{
   width: min(520px, 100%);
   background: var(--card);

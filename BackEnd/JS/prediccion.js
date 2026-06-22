@@ -33,59 +33,13 @@ export async function obtenerMetricas(historial) {
     return data.metricas_result || {};
 }
 
-/*
-export async function obtenerExplicacionesMedica(historial) {
-    const response = await fetch(`${API_URL}/api/predict`, {
+export async function obtenerEYRA(historial) {
+    const response = await fetch(`${API_URL}/api/eyra`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(historial)
     });
 
     const data = await response.json();
-    return data.historial.explicacion_medica || [];
+    return data.eyra_result || {};
 }
-
-export async function obtenerExplicacionesGeneral(historial) {
-    const response = await fetch(`${API_URL}/api/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(historial)
-    });
-
-    const data = await response.json();
-    return data.historial.explicacion_general || [];
-}
-
-export async function obtenerRecomendaciones(historial) {
-    const response = await fetch(`${API_URL}/api/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(historial)
-    });
-
-    const data = await response.json();
-    return data.historial.recomendaciones || [];
-}
-
-export async function obtenerRecomendacionesImpacto(historial) {
-    const response = await fetch(`${API_URL}/api/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(historial)
-    });
-
-    const data = await response.json();
-    return data.historial.recomendaciones_con_impacto || [];
-}
-
-export async function obtenerMetricas(historial) {
-    const response = await fetch(`${API_URL}/api/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(historial)
-    });
-
-    const data = await response.json();
-    return data.historial.metricas || {};
-}
-    */

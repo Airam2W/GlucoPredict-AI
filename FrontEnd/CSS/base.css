@@ -28,7 +28,7 @@
   --border: rgba(255, 255, 255, 0.5);
   --input-bg: rgba(255, 255, 255, 0.6);
   --input-bg-focus: #ffffff;
-  --input-border: rgba(255, 255, 255, 0.8);
+  --input-border: rgba(0, 0, 0, 0.2);
   --secondary-bg: rgba(255, 255, 255, 0.8);
   --nav-bg: rgba(255, 255, 255, 0.5);
   --hover-surface: #c6dbf3;
@@ -63,6 +63,8 @@
   --primary-soft: rgba(96, 165, 250, 0.16);
   --accent: #34d399;
   --accent-soft: rgba(52, 211, 153, 0.16);
+  --terciary: #f8a971;
+  --terciary-soft: rgba(248, 169, 113, 0.16);
   --danger: #f87171;
   --danger-soft: rgba(248, 113, 113, 0.14);
 
@@ -89,7 +91,11 @@
   --skeleton-b: rgba(226, 232, 240, 0.34);
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box;  }
+
+html{
+  overflow-x: hidden !important;
+}
 
 body{
   margin:0;
