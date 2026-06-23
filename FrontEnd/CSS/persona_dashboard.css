@@ -160,3 +160,9 @@ html[data-theme="dark"] ul#listaPerfiles li.perfil-card {
 html[data-theme="dark"] ul#listaPerfiles{
   border:#10272e;
 }
+
+@media (max-width: 600px) {
+  #pagaButton {
+    margin-top: 22px;
+  }
+}
